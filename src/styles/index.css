@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+@import './tokens.css';
+@import './base.css';
+@import './features.css';
+@import './components.css';
+@import './workspace.css';
+@import './responsive.css';
+@import './layouts.css';
+@import './overview.css';
+@import './account.css';
+@import './detection.css';
+@import './theme.css';
+@import './cultivation.css';
+@import './greenhouse-management.css';
+@import './zones.css';
+
+@import './spatial.css';
+@import './energy.css';
+@import './operations.css';
+@import './growing.css';
+@import './guide.css';
+@import './assistant.css';
+@import './illustrations.css';
+@import './login.css';

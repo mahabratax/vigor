@@ -1,0 +1,30 @@
+:root {
+  font-family: 'Plus Jakarta Sans Variable', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --bg: #f3f7f4;
+  --surface: #ffffff;
+  --ink: #20352b;
+  --muted: #5d7165;
+  --green: #1d593f;
+  --leaf: #73a15c;
+  --sage: #eaf2eb;
+  --water: #357e88;
+  --line: #dce6df;
+  --attention: #c87c2a;
+  --amber: #92571e;
+  --red: #a84238;
+  --radius: 12px;
+  --sidebar-width: 224px;
+  --space-panel: 22px;
+  --space-page: clamp(20px, 2.1vw, 32px);
+  --text-caption: 12px;
+  --text-small: 13px;
+  --text-body: 14px;
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 14px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}

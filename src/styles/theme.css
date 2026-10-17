@@ -1,0 +1,96 @@
+:root {
+  color-scheme: light;
+  --action-bg: #1d593f;
+  --action-ink: #ffffff;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14261f;
+  --surface: #1c3026;
+  --ink: #e2ece3;
+  --muted: #a5baab;
+  --green: #a2ceac;
+  --leaf: #88b478;
+  --sage: #2a4232;
+  --water: #8ec4c7;
+  --line: #3b5142;
+  --attention: #d4a364;
+  --amber: #e0b67b;
+  --red: #e7a299;
+  --action-bg: #356d4d;
+  --action-ink: #ffffff;
+  --theme-surface: var(--surface);
+  --theme-surface-soft: #21372b;
+  --theme-green-surface: #243e2d;
+  --theme-water-surface: #213d3c;
+  --theme-amber-surface: #403823;
+  --theme-purple-surface: #353043;
+  --theme-border: var(--line);
+  --theme-ink: var(--ink);
+  --theme-muted: var(--muted);
+  --theme-green: var(--green);
+  --theme-water: var(--water);
+  --theme-amber: var(--amber);
+  --theme-red: var(--red);
+  --theme-purple: #c2b1d2;
+  --chart-a: #a2ceac;
+  --chart-b: #e2b06b;
+  --chart-c: #8ec4c7;
+  --chart-d: #bcb4d5;
+  --chart-e: #b6c68c;
+  --chart-f: #d6a98f;
+  --chart-actual: #9fc9a5;
+  --chart-baseline: #638a71;
+}
+.button.primary,
+.skip-link {
+  background: var(--action-bg);
+  border-color: var(--action-bg);
+  color: var(--action-ink);
+}
+.button.primary:hover:not(:disabled) {
+  background: #28613f;
+  border-color: #28613f;
+  color: #ffffff;
+}
+[data-theme='dark'] .brand {
+  border-radius: 6px;
+  background: #f7f8f3;
+}
+[data-theme='dark'] .nav-item.selected .nav-count {
+  background: #c6ddc9;
+  color: #203c29;
+}
+[data-theme='dark'] .notification-count {
+  background: #d5a469;
+  color: #203227;
+}
+/* Illustration/media canvases retain their own lighting; only the surrounding app changes theme. */
+input[type='date'],
+input[type='month'],
+input[type='datetime-local'] {
+  color-scheme: inherit;
+}
+.recharts-default-tooltip {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: 7px;
+  font-family: inherit;
+}
+@media print {
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --bg: white;
+    --surface: white;
+    --ink: #20352b;
+    --muted: #5d7165;
+    --green: #1d593f;
+    --line: #dce6df;
+    --sage: #eaf2eb;
+    --theme-surface-soft: #f3f7f4;
+    --theme-green-surface: #edf3ee;
+    --theme-water-surface: #edf5f5;
+    --theme-amber-surface: #fff5e6;
+  }
+}

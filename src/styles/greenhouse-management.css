@@ -1,0 +1,136 @@
+.greenhouse-register-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.greenhouse-register-toolbar .search-field {
+  max-width: 350px;
+  width: 100%;
+}
+.greenhouse-register-toolbar > span,
+.greenhouse-register-note {
+  color: var(--muted);
+  font-size: var(--text-small);
+}
+.greenhouse-register-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) minmax(260px, 1.3fr) auto;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.greenhouse-register-row:last-child {
+  border-bottom: 0;
+}
+.greenhouse-register-identity {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+}
+.greenhouse-register-identity > div {
+  min-width: 0;
+}
+.greenhouse-register-symbol {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 56px;
+  flex: 0 0 48px;
+  border-radius: 8px 8px 16px 16px;
+  background: var(--sage);
+  color: var(--green);
+}
+.greenhouse-register-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.greenhouse-register-name h3 {
+  font-size: 15px;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.greenhouse-register-identity p {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 5px 0;
+  color: var(--muted);
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+.greenhouse-register-identity p svg {
+  flex-shrink: 0;
+}
+.greenhouse-register-identity small {
+  color: var(--muted);
+  font-size: var(--text-caption);
+}
+.greenhouse-register-facts {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 12px;
+  margin: 0;
+}
+.greenhouse-register-facts dt {
+  color: var(--muted);
+  font-size: var(--text-caption);
+  margin-bottom: 5px;
+}
+.greenhouse-register-facts dd {
+  margin: 0;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+.greenhouse-register-actions {
+  display: flex;
+  gap: 6px;
+}
+.greenhouse-register-actions .button {
+  min-height: 40px;
+}
+.greenhouse-register-note {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  margin: 0;
+  max-width: none;
+}
+@media (max-width: 1280px) {
+  .greenhouse-register-row {
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 16px;
+  }
+  .greenhouse-register-facts {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    max-width: 540px;
+  }
+}
+@media (max-width: 560px) {
+  .greenhouse-register-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .greenhouse-register-toolbar .search-field {
+    max-width: none;
+  }
+  .greenhouse-register-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+  .greenhouse-register-actions {
+    justify-content: flex-end;
+  }
+  .greenhouse-register-actions .button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
