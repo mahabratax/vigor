@@ -1,0 +1,23 @@
+/* Portable compatibility preview. This is NOT a Vite build or a React 19 bundle.
+   Compiles the same TypeScript UI with a minimal vendored Preact adapter. */
+const fs=require('node:fs'),path=require('node:path');
+let ts;try{ts=require('typescript');}catch{ts=require('/usr/local/slides_js/node_modules/typescript');}
+const root=path.resolve(__dirname,'..');const src=path.join(root,'src');
+const files=[];function walk(dir){for(const f of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,f.name);if(f.isDirectory())walk(p);else if(/\.tsx?$/.test(f.name)&&!f.name.endsWith('.d.ts'))files.push(p);}}walk(src);
+const modules=[];let errors=[];
+for(const file of files){const id=path.relative(src,file).replaceAll('\\','/').replace(/\.tsx?$/,'');const out=ts.transpileModule(fs.readFileSync(file,'utf8'),{fileName:file,compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.React,esModuleInterop:true,strict:true,isolatedModules:true},reportDiagnostics:true});errors.push(...(out.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error));modules.push(JSON.stringify(id)+':function(require,module,exports){\n'+out.outputText+'\n}');}
+if(errors.length){console.error(ts.formatDiagnosticsWithColorAndContext(errors,{getCanonicalFileName:x=>x,getCurrentDirectory:()=>root,getNewLine:()=>"\n"}));process.exit(1);}
+let preact=fs.readFileSync(path.join(root,'portable/vendor/preact.mjs'),'utf8');const exp=preact.match(/export\{([^}]+)\};?\s*$/);if(!exp)throw Error('Unknown Preact export format');const fields=exp[1].split(',').map(x=>{const p=x.trim().split(/\s+as\s+/);return (p[1]||p[0])+':'+p[0];});preact=preact.replace(/export\{[^}]+\};?\s*$/,'return {'+fields.join(',')+'};');
+const compat=fs.readFileSync(path.join(root,'scripts/portable-adapter.js'),'utf8');
+const license=fs.readFileSync(path.join(root,'portable/vendor/LICENSE-preact.txt'),'utf8');
+const js=`/* ${license} */
+/* Vigor portable preview · Preact MIT adapter · TypeScript ${ts.version} */\n(function(){'use strict';window.__VIGOR_PORTABLE__=true;const P=(function(){${preact}})();${compat}\nconst modules={${modules.join(',\n')}};const cache={};function load(id){if(externals[id])return externals[id];if(cache[id])return cache[id].exports;if(!modules[id])throw Error('Portable module unavailable: '+id);const m={exports:{}};cache[id]=m;const req=name=>{if(name.endsWith('.css'))return {};if(!name.startsWith('.'))return load(name);const parts=id.split('/');parts.pop();for(const p of name.split('/')){if(p==='..')parts.pop();else if(p!=='.')parts.push(p);}return load(parts.join('/').replace(/\\.tsx?$/,''));};modules[id](req,m,m.exports);return m.exports;}load('main');if(location.search.includes('test=1'))window.__VIGOR_TEST__={store:load('store/store').store,fixture:load('data/fixtures').createFixture,scheduler:load('domain/scheduler'),costs:load('domain/costs'),format:load('domain/format')};})();`;
+const out=path.join(root,'portable');fs.mkdirSync(out,{recursive:true});fs.writeFileSync(path.join(out,'app.js'),js);
+const css=fs.readFileSync(path.join(src,'styles/index.css'),'utf8').replace(/^@import "tailwindcss";\s*/, '');fs.writeFileSync(path.join(out,'style.css'),css);
+fs.cpSync(path.join(root,'public/assets'),path.join(out,'assets'),{recursive:true});
+const shell=(style,script)=>`<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#244735"><title>Vigor — Prototype Greenhouse</title>${style}</head><body><div id="root"></div>${script}</body></html>`;
+fs.writeFileSync(path.join(out,'index.html'),shell('<link rel="stylesheet" href="./style.css">','<script src="./app.js"></script>'));
+let single=js;for(const f of fs.readdirSync(path.join(out,'assets'))){const ext=path.extname(f).slice(1),mime=ext==='webp'?'image/webp':ext==='svg'?'image/svg+xml':'image/'+ext;const data='data:'+mime+';base64,'+fs.readFileSync(path.join(out,'assets',f)).toString('base64');single=single.split('./assets/'+f).join(data);}
+fs.writeFileSync(path.join(root,'Vigor-Preview.html'),shell('<style>'+css+'</style>','<script>'+single.replace(/<\/script/gi,'<\\/script')+'</script>'));
+fs.writeFileSync(path.join(root,'docs/portable-build.json'),JSON.stringify({runtime:'Vendored Preact compatibility adapter; not React 19',typescript:ts.version,node:process.version,modules:files.length,syntaxDiagnostics:errors.length,generated:new Date().toISOString()},null,2));
+console.log(`Portable preview: ${files.length} TypeScript modules transpiled, ${errors.length} syntax diagnostics. Target Vite/dependency build not verified.`);
