@@ -1,0 +1,8 @@
+{
+  "version": 30,
+  "commit": "684a16608f8854b351ddd2cc4c17fa123da0669c",
+  "sourceDate": "2026-10-17",
+  "includedBuild": "dist-gcp",
+  "prototypeEntry": "local",
+  "browserDatabaseBackupIncluded": false
+}
