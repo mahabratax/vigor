@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-gcp
+.git
+.env*
+.wrangler
+.sites-runtime
+.next
+.vinext
+test-results
+playwright-report
+portable
+*.log
+*.tar.gz
