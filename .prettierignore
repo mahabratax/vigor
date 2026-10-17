@@ -1,0 +1,6 @@
+dist
+node_modules
+portable
+public
+review
+package-lock.json

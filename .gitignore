@@ -1,0 +1,19 @@
+node_modules/
+dist/
+dist-gcp/
+test-results/
+playwright-report/
+*.log
+.checks/
+__pycache__/
+
+/.next/
+/.vinext/
+/.wrangler/
+/.sites-runtime/
+
+/next-env.d.ts
+.env*
+
+# keep the env template, ignore real env files
+!.env.local.example

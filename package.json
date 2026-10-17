@@ -1,0 +1,80 @@
+{
+  "name": "vigor-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node scripts/run-framework.mjs dev",
+    "build": "tsc --noEmit && node scripts/run-framework.mjs build",
+    "build:gcp": "tsc --noEmit && vite build --config vite.gcp.config.ts && vite build --config vite.gcp-server.config.ts && node scripts/verify-gcp-build.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "build:portable": "node scripts/build-portable.cjs",
+    "preview:portable": "node scripts/serve.cjs",
+    "check:domain": "node scripts/check-domain.cjs",
+    "test:domain": "node scripts/check-domain.cjs && node --test tests/offline-domain.cjs",
+    "test:portable": "python tests/browser-smoke.py",
+    "format": "prettier --write src tests",
+    "format:check": "prettier --check src tests",
+    "install:ci": "node scripts/install-ci.mjs",
+    "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
+    "db:generate": "drizzle-kit generate",
+    "db:model": "node --experimental-strip-types scripts/generate-db-schema.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-router": "^7.0.0",
+    "recharts": "^3.0.0",
+    "three": "^0.180.0",
+    "zustand": "^5.0.0",
+    "next": "16.3.4",
+    "drizzle-orm": "0.45.2",
+    "zod": "^3.25.76",
+    "sql.js": "1.15.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.51.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "^0.180.0",
+    "@vitejs/plugin-react": "6.0.2",
+    "eslint": "^9.0.0",
+    "jsdom": "^26.1.0",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.0.0",
+    "vite": "8.0.13",
+    "vitest": "^3.2.0",
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "react-server-dom-webpack": "19.2.6",
+    "vinext": "1.0.0-beta.5",
+    "wrangler": "4.92.0",
+    "json-rpc-2.0": "1.7.1",
+    "raw-body": "3.0.2",
+    "@types/sql.js": "1.4.11",
+    "fake-indexeddb": "6.2.5"
+  },
+  "overrides": {
+    "miniflare": {
+      "sharp": "0.35.4"
+    }
+  }
+}
