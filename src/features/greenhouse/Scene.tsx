@@ -23,7 +23,7 @@ import { CropCanopy } from './CropCanopy';
 import { Foundation, Structure, BedFurniture, IrrigationNetwork } from './SceneArchitecture';
 import { SceneServices } from './SceneServices';
 import { serviceAssets, type ServiceId } from './serviceModel';
-import { AssetAnnotations } from './AssetAnnotations';
+import { AssetAnnotations } from './AssetAnnotationsOverlay';
 export interface SceneProps {
   s: DomainState;
   selected: ZoneId;

@@ -21,7 +21,7 @@ import {
 } from '../../domain/format';
 import { kpis, todayUsage, trendData } from '../../domain/selectors';
 import { ZoneWatch } from './ZoneWatch';
-import { WorkQueue } from './WorkQueue';
+import { WorkQueue } from './WorkQueuePanel';
 
 function Operations({ ctx }: { ctx: PageContext }) {
   const { s } = ctx,
