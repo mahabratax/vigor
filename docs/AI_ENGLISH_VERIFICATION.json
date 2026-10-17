@@ -1,0 +1,21 @@
+{
+  "scope": "AI foundation and English interface",
+  "tests": {
+    "passed": 417,
+    "failed": 0,
+    "total": 417,
+    "files": 27
+  },
+  "typescript": "passed",
+  "applicationBuild": "passed using Sites build helper",
+  "responsiveComponentWidths": [
+    390,
+    768,
+    1280,
+    1440
+  ],
+  "browserPixelReview": "not run; no approved browser tool available",
+  "webgl": "not run",
+  "liveAi": "not configured",
+  "privateAudience": "preserved"
+}

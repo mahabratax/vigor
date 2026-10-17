@@ -1,0 +1,874 @@
+PROMPT EKSEKUSI — VIGOR
+Prototype frontend dashboard greenhouse, monitoring, otomasi budidaya, dan pengendalian hama
+Versi 3.0 | Bahasa antarmuka: Indonesia
+
+CARA PAKAI
+Salin seluruh bagian “PROMPT UNTUK CODING AGENT” ke coding agent dan lampirkan folder aset final Vigor serta referensi halaman. Prompt ini meminta aplikasi yang bisa dijalankan, bukan hanya gambar atau rencana.
+Asumsi awal: greenhouse sudah tersedia; biaya yang dimodelkan adalah penambahan monitoring, otomasi budidaya, dan pengendalian. Rutinitas seperti irigasi, fertigasi, dan pengaturan lingkungan berjalan otomatis dalam simulator setelah konfigurasi awal diaktifkan. Pengendalian hama memakai tugas nonkimia serta simulator perangkat. Semua asumsi dapat diubah melalui konfigurasi.
+Versi ini menggantikan versi 2.0. Otomasi tetap berjalan otomatis dalam simulator; menu perangkat kini terhubung ke pengeluaran berkala, pemeliharaan, dan pembanding penghematan. Kalkulator belanja awal menjadi fitur pendukung.
+Angka biaya di bawah adalah fixture aritmetika untuk demonstrasi, bukan harga pasar, penawaran vendor, atau janji bahwa sistem produksi dapat dibuat dengan biaya tersebut.
+
+========================================================================
+PROMPT UNTUK CODING AGENT
+========================================================================
+
+Bertindak sebagai senior frontend engineer sekaligus product designer. Bangun prototype VIGOR yang rapi, responsif, dapat diklik, dan memiliki alur operasional lengkap.
+
+Vigor membantu pengelola greenhouse menjawab:
+1. Apa yang perlu saya periksa hari ini?
+2. Zona mana yang memiliki bukti masalah, data tidak lengkap, atau perangkat mati?
+3. Apa tindakan berikutnya, siapa penanggung jawabnya, dan kapan dievaluasi?
+4. Rutinitas apa yang sedang berjalan otomatis, akan berjalan berikutnya, atau tertahan oleh kondisi perangkat?
+5. Berapa pengeluaran pada periode ini, perangkat apa yang menambah biaya, dan berapa selisih operasional setelah otomasi dengan pembanding yang dapat diperiksa?
+
+Jangan berhenti pada scaffolding, halaman kosong, screenshot statis, atau daftar rekomendasi. Implementasikan aplikasi beserta data demo, interaksi, pemeriksaan build, dan petunjuk menjalankan.
+
+1. BATAS PEKERJAAN DAN SUMBER DESAIN
+
+- Frontend saja. Data berasal dari fixtures bertipe dan state lokal. Tidak ada API/backend, database, autentikasi nyata, MQTT, WebSocket, pengiriman WhatsApp, cloud inference, atau koneksi perangkat.
+- Jangan memasang TensorFlow.js, PyTorch, YOLO, gRPC, Protocol Buffers, atau Vertex AI pada tahap ini. Analisis AI ditampilkan sebagai hasil demo yang telah disiapkan, bukan inference sungguhan.
+- Tidak ada pembayaran, pengiriman notifikasi eksternal, atau aktuasi fisik. Tombol dan jadwal mengubah simulator perangkat di browser.
+- Frontend-only bukan berarti seluruh interaksi manual. Implementasikan scheduler lokal, evaluasi kondisi, urutan langkah, antrean sumber daya, dan umpan balik perangkat SIMULASI. Semua proses dipicu oleh demo clock; bukan layanan background yang tetap berjalan setelah browser ditutup.
+- Seluruh label antarmuka menggunakan Bahasa Indonesia yang ringkas. Gunakan penamaan teknis berbahasa Inggris di kode bila membantu keterbacaan.
+- Gunakan aset final pengguna sebagai sumber visual utama: logo Vigor, logo mark, ilustrasi, referensi dashboard, gambar greenhouse, foto bukti, video, dan model 3D bila tersedia.
+- Inventarisasi aset dan repo terlebih dahulu. Patuhi instruksi repo dan pertahankan pekerjaan yang sudah ada.
+- Jangan menganggap semua file PNG greenhouse adalah model 3D. Jika GLB/GLTF tidak ada, bangun model skematik sederhana dengan primitive Three.js.
+- Jangan memakai screenshot halaman sebagai seluruh UI. Rekonstruksi layout, grafik, tabel, dan kontrol sebagai komponen yang berfungsi.
+- Jangan mengganti atau mendesain ulang logo final. Jika ada beberapa varian tanpa penanda final, pilih yang paling sesuai dengan referensi dashboard, catat pilihan, dan sediakan satu pemetaan aset agar mudah diganti.
+- Reference Ringkasan terbaru yang berisi statistik lebih diprioritaskan daripada versi lama yang didominasi greenhouse 3D.
+- Jika aset opsional hilang, gunakan placeholder yang jelas dan lanjutkan. Jangan mengaku telah memakai aset yang tidak tersedia.
+
+2. STACK YANG DIPILIH
+
+Untuk proyek baru, gunakan React 19 + TypeScript strict + Vite, sebagai SPA statis. SSR tidak diperlukan untuk prototype dashboard ini.
+
+Dependensi inti:
+- react dan react-dom: versi 19.x yang sama.
+- typescript, vite, dan @vitejs/plugin-react: versi stable yang kompatibel dengan Node dan environment yang tersedia.
+- react-router: declarative routing; pilih stable yang kompatibel. Untuk proyek baru boleh gunakan lini 7.x; jangan mencampur contoh API dari major berbeda.
+- tailwindcss 4.x + @tailwindcss/vite 4.x: styling dan token visual.
+- shadcn/ui dengan primitive Radix: ambil hanya komponen yang dipakai, seperti Button, Dialog, Sheet, Tabs, Select, Tooltip, DropdownMenu, Input, Badge, dan Table. Komponen tetap berada di repo dan dapat disesuaikan.
+- zustand: state demo bersama, selector, dan persist data serializable.
+- recharts: grafik tren, lingkungan, dan komposisi biaya.
+- lucide-react: ikon antarmuka yang konsisten.
+- react-hook-form + zod + @hookform/resolvers: validasi form inspeksi, rencana tindakan, rutinitas otomatis, profil nutrisi, dan konfigurasi biaya.
+- clsx + tailwind-merge: komposisi class bila diperlukan oleh komponen UI.
+
+Dependensi visual 3D:
+- three.
+- @react-three/fiber 9.x untuk React 19.
+- @react-three/drei versi stable yang peer dependencies-nya cocok.
+- @types/three sebagai development dependency bila diperlukan.
+- Gunakan WebGL konvensional; tidak perlu WebGPU, physics engine, atau postprocessing berat.
+
+Development dan pemeriksaan:
+- ESLint beserta konfigurasi TypeScript/React yang relevan.
+- Vitest untuk fungsi biaya, scheduler, evaluasi kondisi, pembatasan operasi, dan transisi simulator yang rawan salah.
+- Playwright untuk beberapa alur utama jika environment mendukung browser test.
+- Jangan menambah dua library yang memiliki fungsi sama. Jangan memasang paket pengujian tambahan tanpa kebutuhan.
+
+Gunakan Intl.NumberFormat untuk Rupiah dan Intl.DateTimeFormat dengan timeZone Asia/Jakarta untuk waktu. Date library tidak wajib.
+Gunakan HTML video native untuk file MP4/WebM lokal; jangan memasang video player berat. hls.js baru diperlukan jika kebutuhan HLS nyata kemudian dikonfirmasi.
+Animasi cukup CSS transition; library animasi bukan keharusan.
+Scheduler demo berupa fungsi TypeScript deterministik yang digerakkan satu demo clock. Gunakan field jadwal yang terstruktur (hari, jam, interval, tanggal berlaku, zona waktu); tidak perlu cron server, workflow backend, message queue, atau library node editor. Builder rutinitas memakai form dan stepper yang mudah dibaca.
+
+Aturan dependency:
+- Periksa dokumentasi dan peer dependencies sebelum instalasi.
+- Pilih stable, bukan alpha, beta, atau experimental.
+- Jangan menebak patch version dalam dokumentasi hasil. Catat versi yang benar-benar terpasang.
+- Gunakan satu package manager dan satu lockfile. Untuk proyek baru pilih npm; ikuti lockfile yang ada untuk repo existing.
+- Jangan menyelesaikan konflik dengan --force atau --legacy-peer-deps.
+- Pastikan scripts dev, build, preview, lint, typecheck, dan test yang relevan benar-benar berjalan.
+- Jika repo sudah menggunakan stack frontend yang memadai, pertahankan stack tersebut dan jelaskan penyesuaian; jangan memigrasikan framework hanya demi mengikuti template ini.
+
+3. ARAH VISUAL
+
+Karakter: modern agriculture yang tenang, presisi, mudah dipakai, dan terasa dekat dengan operasional kebun.
+
+Token awal, sesuaikan bila aset final memberi warna yang lebih akurat:
+- Background hangat: #F6F7F2.
+- Surface: #FFFFFF.
+- Hijau utama: #244735.
+- Hijau daun: #8DBB57.
+- Teks utama charcoal; teks sekunder cukup kontras.
+- Sage untuk elemen pendukung.
+- Amber untuk perlu perhatian; merah untuk masalah mendesak; abu-abu untuk data belum tersedia.
+- Radius kartu 14–18 px, border halus, bayangan ringan, skala spacing konsisten.
+- Font Inter atau font dari aset pengguna; sediakan system fallback dan hindari ketergantungan font eksternal bila aset lokal ada.
+
+Gunakan sidebar berlabel, header ringkas, ruang putih yang cukup, dan angka statistik yang mudah dibaca.
+Hindari efek kaca berlebihan, neon, gradasi di semua kartu, ikon robot, dan ornamen AI.
+Status harus mempunyai teks dan ikon, bukan warna saja.
+Jangan menciptakan skor kesehatan greenhouse yang tidak memiliki definisi.
+
+Desktop: sidebar sekitar 232–248 px; konten mengikuti lebar layar secara fleksibel.
+Tablet: sidebar dapat dilipat.
+Mobile: navigasi drawer, kartu bertumpuk, detail tampil sebagai sheet, tabel dapat digulir atau diubah menjadi daftar.
+Pastikan layout nyaman pada lebar 390, 768, 1280, dan 1440 px.
+
+4. NAVIGASI DAN TANGGUNG JAWAB HALAMAN
+
+Bangun delapan tujuan navigasi:
+- /ringkasan — Ringkasan
+- /greenhouse — Greenhouse
+- /hama — Hama & inspeksi
+- /pengendalian — Pengendalian
+- /otomasi — Otomasi & rutinitas
+- /perangkat — Perangkat
+- /riwayat — Riwayat & laporan
+- /biaya — Biaya & penghematan
+
+Root mengarah ke Ringkasan. Detail kasus/perangkat boleh memakai nested route atau query parameter yang dapat dibuka kembali.
+Untuk hosting statis, dukung SPA fallback; jika host tidak menyediakan rewrite, gunakan HashRouter dan dokumentasikan pilihannya.
+Jangan membuat halaman Kamera terpisah yang mengulang halaman Perangkat. Preview kamera digunakan kembali melalui komponen yang sama.
+Otomasi & rutinitas memiliki jadwal, aturan, dan eksekusi berulang. Pengendalian memiliki kasus serta rencana tindakan hama. Perangkat memiliki inventaris dan perawatan. Satu rutinitas, command, atau execution run ditautkan antarhalaman melalui ID yang sama; jangan menduplikasi record.
+Gunakan tab lokal untuk Jadwal, Rutinitas, Eksekusi, dan Profil nutrisi di menu Otomasi. Pengaturan kecil tetap inline/drawer; jangan menambah menu top-level untuk setiap aktuator.
+Header menampilkan greenhouse aktif, waktu data, indikator Mode demo, serta menu skenario dan reset demo. Profil operator hanyalah identitas demo.
+
+5. RINGKASAN: STATISTIK DAN PRIORITAS
+
+Tidak ada tampilan greenhouse 3D besar di halaman ini.
+
+Tampilkan:
+- Empat KPI yang diturunkan dari state: perlu inspeksi, cakupan pengamatan hama, kamera & suhu/RH online, kasus selesai dalam 7 hari. Definisi cakupan awal tetap berdasarkan kualitas pengamatan hama; bukan ukuran kelengkapan otomasi.
+- Grafik tangkapan baru per interval pengamatan, dengan filter zona dan periode.
+- Prioritas tindakan: inspeksi Zona B, perbaikan Kamera E-01, validasi pemasangan Zona F.
+- Ringkasan suhu dan kelembapan; pisahkan satuan dengan dua grafik selaras atau sumbu yang jelas.
+- Tabel status zona: kelengkapan monitoring, temuan, pembaruan terakhir, dan CTA detail.
+- Widget “Operasional otomatis”: rutinitas aktif, eksekusi yang sedang berjalan, jadwal berikutnya, dan pengecualian. Item running memperlihatkan zona, langkah, sisa waktu, dan tombol stop yang jelas.
+- Strip jadwal 24 jam berisi penyiraman, fertigasi, kontrol lingkungan, serta tugas preventif. Jangan menampilkan semua jadwal sebagai permintaan persetujuan.
+- Ringkasan penggunaan air dan nutrisi membedakan estimasi dengan pengukuran demo. Jika sensor tidak tersedia, jangan menulis angka sebagai pemakaian terukur.
+- Aktivitas pengendalian hama tetap ditampilkan bila terkait prioritas hari itu. Tampilkan yang memerlukan keputusan, bukan semua event scheduler.
+- Satu preview kamera ringkas, misalnya “Bukti terbaru Zona B”, yang membuka detail monitoring.
+- Ringkasan biaya periode: pengeluaran tercatat, sisa anggaran, dan selisih terhadap baseline jika tersedia. Klik membuka Biaya & penghematan dengan periode/scope yang sama. Tandai bila bulan belum selesai.
+
+Klik KPI/filter harus membuka daftar relevan dengan filter yang sama.
+Grafik memiliki axis, unit, tooltip, legenda interaktif, dan ringkasan tekstual.
+Data hilang harus menghasilkan gap/null, bukan nol. Jangan menyambung garis melewati interval yang datanya tidak ada tanpa penanda.
+
+6. GREENHOUSE: PETA DAN KONTEKS FISIK
+
+Halaman ini menjadi satu-satunya tempat utama untuk tampilan greenhouse 3D.
+
+Layout:
+- Toolbar: greenhouse, siklus tanam, tampilan 2D/3D, reset kamera, dan layer tampilan.
+- Model greenhouse isometrik dengan enam zona A–F.
+- Panel detail zona: tanaman, luas, sensor, kamera, status monitoring, kasus aktif, rutinitas, dan tindakan.
+- Marker valve/pompa/fan yang benar-benar tersedia pada konfigurasi demo. Saat eksekusi berjalan, marker memperlihatkan state dari store dan menautkan ke run yang sama. Aliran/gerakan bersifat penanda sederhana, bukan simulasi fluida.
+- Inventaris zona yang dapat diakses dengan keyboard.
+- Layer terpisah untuk kelengkapan monitoring, temuan hama, dan suhu. Jangan membuat warna “sehat” ketika data belum lengkap.
+
+Interaksi:
+- Klik bed/marker memilih zona dan menyinkronkan model, tabel, serta panel.
+- Orbit terbatas, zoom terbatas, dan reset view. Tidak ada auto-rotate.
+- Jika model kompleks tidak tersedia, buat struktur transparan sederhana dengan bed tanaman dan marker perangkat. Beri caption “Model skematik”.
+- Gunakan geometri/material bersama atau instancing untuk objek berulang.
+- Load scene hanya saat halaman atau tab 3D dibuka. Pakai React.lazy/Suspense, error boundary, frameloop="demand", dan DPR yang dibatasi sekitar 1–1.5.
+- Gunakan controls Drei yang sesuai dengan demand rendering.
+- Tidak ada bayangan real-time berat, refleksi mahal, atau ratusan mesh tanaman unik.
+- Sediakan diagram 2D SVG sebagai tampilan setara, bukan sekadar pesan error. Pengguna tetap dapat memilih seluruh zona dan melakukan tugas yang sama.
+- Pada mobile, default ke 2D; 3D bisa dipilih. Jika WebGL gagal, tampilkan 2D dengan alasan singkat.
+
+7. KAMERA DAN SENSOR: PREVIEW YANG MEYAKINKAN
+
+Gunakan komponen bersama CameraPreview dan SensorReadingCard di detail zona, kasus, serta perangkat.
+
+Bedakan dua kegunaan kamera:
+- Kamera area: melihat kondisi zona secara umum.
+- Kamera perangkap: foto dekat perangkap untuk bukti pengamatan.
+Jangan mengklaim kamera wide-angle bisa mengidentifikasi serangga kecil dari seluruh greenhouse.
+
+CameraPreview:
+- Rasio 16:9, nama kamera, zona, jenis kamera, waktu frame, status koneksi, sumber media, dan label Video demo atau Rekaman demo.
+- MP4/WebM lokal dengan poster, muted, playsInline, play/pause, fullscreen, dan pemilihan kamera.
+- Grid hanya memutar kamera yang dipilih; tile lainnya memakai poster agar ringan.
+- Pause media ketika tidak terlihat atau tab browser disembunyikan.
+- State: loading, siap, diputar, paused, offline, rekaman terakhir, dan media tidak tersedia.
+- Kamera offline menampilkan timestamp rekaman terakhir secara jelas; jangan memberi badge LIVE.
+- Jika video belum tersedia, tampilkan poster atau placeholder yang jujur, bukan animasi loading tanpa akhir.
+- Tombol ambil snapshot hanya menghasilkan tangkapan dari video lokal yang memang tersedia; bila tidak tersedia, nonaktifkan dengan alasan.
+- Bounding box AI hanya boleh muncul pada gambar bukti yang memiliki fixture anotasi dan label “Anotasi demo”. Jangan menaruh kotak acak pada video tanpa objek yang sesuai.
+
+Sensor:
+- Suhu, kelembapan relatif, waktu pembacaan, kondisi sensor, status koneksi, dan tren kecil.
+- Cahaya, kelembapan media, level tangki, debit/tekanan, EC, dan pH adalah modul berbasis capability. Pada preset monitoring-only yang tidak memasangnya, tampil “Belum terpasang”. Pada skenario otomasi, aktifkan fixture perangkat terkait secara eksplisit agar rutinitas dapat dijalankan; jangan menyediakan pembacaan dari perangkat yang tidak ada.
+- Bedakan kelembapan relatif udara (RH) dari kelembapan media akar. Jangan memakai RH sebagai pengganti sensor media untuk keputusan penyiraman.
+- CO2 adalah modul opsional untuk observasi saja dalam scope ini.
+- Rentang normal/threshold merupakan konfigurasi demo, bukan rekomendasi universal untuk semua tanaman.
+- Bedakan online, stale, offline, dan belum dikalibrasi.
+- Mode playback mengubah nilai melalui rangkaian data yang telah ditentukan, bukan Math.random saat render.
+
+8. HAMA & INSPEKSI: DARI BUKTI KE KEPUTUSAN
+
+Halaman daftar:
+- Filter status, zona, tanggal, dan kategori dugaan hama.
+- Baris/kartu menampilkan ID, zona, bukti terbaru, tren, status verifikasi, penanggung jawab, dan jadwal.
+- Klik membuka detail kasus dan mempertahankan filter ketika kembali.
+
+Detail kasus:
+- Foto perangkap/bukti, timestamp, perangkat asal, anotasi demo opsional.
+- Tren tangkapan baru dengan interval dan metode hitung yang jelas.
+- Ringkasan analisis terstruktur: apa yang diamati, bukti pendukung, data yang belum tersedia, dan langkah berikutnya.
+- Label “Dugaan AI” dan “Belum diverifikasi” bila sesuai.
+- Nilai confidence, jika ditampilkan, adalah skor model demo; jangan diterjemahkan menjadi kepastian biologis.
+- Tugas inspeksi: pilih petugas, tanggal, jumlah tanaman diperiksa, jumlah bergejala, catatan, dan foto lokal opsional.
+- Validasi jumlah bergejala tidak melebihi tanaman yang diperiksa.
+- Sediakan keputusan “Ada indikasi”, “Tidak ditemukan”, dan “Belum dapat disimpulkan”.
+- Tombol “Buat rencana pengendalian” mengisi zona, kasus sumber, bukti, dan petugas dari kasus ini.
+
+Jangan memperlakukan seluruh serangga tertangkap sebagai hama tanaman. Monitoring perangkap adalah indikator relatif dan harus dapat ditautkan ke inspeksi tanaman. Penyelesaian tugas inspeksi tidak otomatis menutup kasus.
+
+9. PENGENDALIAN: FITUR INTI SETELAH ANALISIS
+
+Bangun workspace untuk rencana tindakan, simulator perangkat, dan evaluasi. Jangan hanya membuat tombol “Usir hama” yang langsung menampilkan sukses.
+
+Tiga jenis tindakan:
+A. Tugas nonkimia
+   Inspeksi lanjutan, perawatan perangkap monitoring, pembersihan area, pemeriksaan/perbaikan insect screen, isolasi tanaman yang perlu ditinjau, dan tindak lanjut oleh petugas.
+   Ini adalah checklist operasional, bukan perangkat yang dapat dinyalakan.
+
+B. Modul pengusir/pengendali fisik
+   Sediakan kartu “Modul pengusir hama — simulator” dengan ikon perangkat, zona target, status, durasi, daya contoh, dan kebutuhan persetujuan.
+   Mekanisme default “Belum dipilih / modul uji”; jenis hama sasaran juga dapat dikonfigurasi.
+   Tombol tetap dapat menjalankan SIMULASI workflow menggunakan profil perangkat uji.
+   Jangan menetapkan ultrasonic, UV, suara, kipas, atau cahaya sebagai solusi efektif universal.
+   Jika jenis perangkat dikonfirmasi kemudian, label dan capability dapat diganti melalui konfigurasi tanpa mengubah alur halaman.
+   Efektivitas ditampilkan “Belum dievaluasi”, bukan persentase keberhasilan buatan.
+
+C. Rencana penanganan oleh petugas
+   Form metode, alasan, penanggung jawab, jadwal, lampiran, dan catatan peninjauan.
+   Penggunaan agen hayati atau bahan kimia untuk pengendalian hama, bila dicatat, hanyalah rencana yang memerlukan peninjauan ahli. Tidak ada dosis, campuran, rekomendasi bahan otomatis, atau aktuasi semprot. Pemberian nutrisi rutin mengikuti alur fertigasi tersendiri pada menu Otomasi.
+
+Alur utama:
+Temuan -> verifikasi/inspeksi -> rekomendasi demo -> rencana -> persetujuan operator -> pelaksanaan -> observasi lanjutan -> evaluasi.
+
+Bedakan:
+- Status rencana: draft, menunggu persetujuan, disetujui, sedang dilakukan, dipantau, selesai, dibatalkan.
+- Status perintah simulator: idle, queued, acknowledged, running, completed, stopped, failed, timed_out.
+- Status perangkat: online, stale, offline.
+Jangan menyamakan “perintah dikirim”, “perangkat mengakui”, dan “tindakan berhasil”.
+
+Dialog sebelum simulasi dimulai:
+- Kasus asal dan bukti.
+- Zona serta perangkat yang dituju.
+- Mode, durasi, dan waktu berhenti.
+- Estimasi energi berdasarkan watt contoh dan durasi.
+- Nama operator serta label “Tidak mengendalikan perangkat nyata”.
+- Tombol “Mulai simulasi”.
+
+Persetujuan pada alur ini berlaku untuk rencana pengendalian hama yang memerlukan review, bukan setiap eksekusi penyiraman, fertigasi, atau rutinitas preventif yang sudah diaktifkan. Rencana hama dapat menautkan rutinitas pada menu Otomasi sesuai kebijakan eksekusinya.
+Saat running, tampilkan countdown dan tombol “Hentikan simulasi”.
+Cegah start jika perangkat offline/stale, kasus belum memenuhi persyaratan review, durasi tidak valid, atau perangkat memiliki pekerjaan aktif yang bertabrakan.
+Berikan alasan spesifik di dekat kontrol.
+Tambahkan skenario gagal acknowledgment dan kehilangan koneksi. Jangan menganggap perangkat nyata berhenti hanya karena timer UI habis atau koneksi terputus; state seperti ini harus menunjukkan status yang belum terkonfirmasi.
+Setelah refresh, tandai sesi simulator yang sebelumnya berjalan sebagai interrupted/Needs reconciliation dengan pesan jelas; jangan menganggap perangkat sudah mati dan jangan otomatis melanjutkan aktuasi.
+
+Evaluasi:
+- Jadwal inspeksi ulang, petugas, observasi setelah tindakan, dan hasil review.
+- Grafik sebelum/sesudah menggunakan rentang dan interval pengamatan yang setara.
+- Jika data belum cukup, tampilkan “Menunggu observasi lanjutan”.
+- Tindakan selesai tidak berarti hama hilang. Penurunan tangkapan juga tidak langsung membuktikan penyebabnya.
+- Status kasus baru menjadi selesai setelah review hasil oleh operator.
+
+Aturan otomatis terkait hama:
+- Gunakan mesin rutinitas bersama pada menu Otomasi; halaman ini menampilkan aturan yang tertaut ke kasus/zona.
+- Tiga hasil aturan tersedia: buat tugas manual, ajukan rencana untuk review, atau jalankan rutinitas perangkat yang telah diaktifkan dan memenuhi batas operasinya.
+- Rutinitas preventif perangkat fisik boleh berjalan otomatis sesuai konfigurasi yang sudah ditinjau; jangan mewajibkan persetujuan ulang pada setiap run.
+- Tindakan hama yang belum terdefinisi atau memerlukan penilaian baru tetap menghasilkan rekomendasi/permintaan review.
+- Tidak ada penyemprotan pestisida otomatis dalam prototype. Penambahan ini terutama mengotomatisasi budidaya rutin dan tindakan preventif yang sudah dikonfigurasi.
+- “Uji aturan” mengevaluasi fixture tanpa mengeluarkan command, dan tidak menggandakan kasus/tugas untuk event yang sama.
+
+10. OTOMASI & RUTINITAS: EKSEKUSI OTOMATIS YANG DAPAT DIPANTAU
+
+A. Tujuan dan kebijakan eksekusi
+
+Menu ini mengelola pekerjaan berulang sebelum masalah terjadi: irigasi, pemberian nutrisi/fertigasi, pengaturan lingkungan, serta perawatan preventif.
+
+Setelah konfigurasi awal diaktifkan, rutinitas boleh mengeksekusi perangkat simulasi secara otomatis. Pengguna tidak perlu membuka setiap jadwal, membuat rencana baru, atau menyetujui setiap eksekusi.
+
+Sediakan kebijakan per rutinitas:
+- Otomatis: berjalan ketika trigger terpenuhi dan seluruh syarat operasi lolos.
+- Minta persetujuan: dipakai untuk tindakan yang memang memerlukan keputusan per kejadian.
+- Buat tugas: untuk pekerjaan fisik yang tetap dilakukan petugas.
+
+Mode otomatis menjadi default untuk template irigasi, fertigasi dengan profil demo yang telah diaktifkan, dan kontrol lingkungan. Default ini bukan izin untuk memakai parameter yang belum lengkap.
+Status definisi rutinitas: Draft, Aktif, Dijeda, atau Perlu ditinjau.
+Aktivasi pertama menampilkan ringkasan jadwal, zona, perangkat, parameter, dan batas operasi. Pengguna meninjau sekali; run berikutnya menggunakan versi yang sama tanpa dialog berulang.
+Perubahan material pada dosis/profil nutrisi, zona, perangkat, atau batas operasi membuat versi baru yang perlu ditinjau sebelum aktif. Jangan mengubah run yang sudah berjalan.
+Temuan AI boleh mengusulkan perubahan jadwal; tidak boleh diam-diam mengganti profil nutrisi atau batas operasi.
+
+B. Tampilan utama
+
+Header: “Otomasi & rutinitas”, greenhouse aktif, waktu demo, tombol Buat rutinitas.
+Summary strip: rutinitas aktif, sedang berjalan, jadwal berikutnya, dan pengecualian yang perlu ditangani.
+
+Tab Jadwal:
+- Timeline 24 jam / agenda 7 hari, dikelompokkan menurut zona atau jenis tindakan.
+- Bedakan direncanakan, berjalan, selesai, dilewati, diblokir, dan gagal.
+- Klik item membuka detail run/rutinitas yang sama.
+- Kontrol “Lewati sekali”, “Jeda jadwal”, “Ubah jadwal”, dan “Jalankan sekali”.
+- Tampilkan waktu WIB dan kejadian berikutnya secara eksplisit.
+
+Tab Rutinitas:
+- Kartu/daftar menampilkan nama, jenis, zona, trigger, policy, versi aktif, jadwal berikutnya, hasil terakhir, dan kondisi penghambat.
+- Filter irigasi, nutrisi, lingkungan, preventif, dan pengendalian hama.
+- Toggle aktif/pause memengaruhi jadwal berikutnya; tidak mematikan run aktif diam-diam.
+
+Tab Eksekusi:
+- Running dan antrean di atas, riwayat di bawah.
+- Detail berupa stepper dengan status per langkah, feedback perangkat, progres, pemakaian, serta alasan menunggu/skip/stop.
+- Pisahkan “Direncanakan”, “Perintah dikirim”, “Perangkat merespons”, dan “Teramati”.
+- Tampilkan panel pengecualian yang actionable, misalnya “Tertahan: pompa sedang dipakai Zona A”, bukan “Error sistem”.
+- Grafik kecil menunjukkan pembacaan yang relevan sebelum/saat/setelah proses.
+
+Tab Profil nutrisi:
+- Nama profil, versi, tanaman/siklus/zona yang dituju, parameter demo, perangkat yang dibutuhkan, status review, tanggal aktivasi, dan riwayat perubahan.
+- EC/pH beserta unit, timestamp, dan kalibrasi ditampilkan bila sensor tersedia.
+- Profil demo harus berlabel “Parameter simulasi, bukan resep budidaya”.
+- Jangan menghitung formulasi pupuk, mencampur bahan, atau merekomendasikan konsentrasi berdasarkan gambar tanaman.
+- Tidak ada dosis asam/basa otomatis untuk koreksi pH dalam scope ini.
+
+C. Builder yang mudah dipakai
+
+Gunakan form bertahap dengan preview urutan, bukan canvas node bebas.
+
+1) Identitas: nama, jenis rutinitas, greenhouse, zona, dan siklus tanam.
+2) Pemicu: jadwal harian/mingguan, interval dalam rentang jam, pembacaan sensor, atau run lain yang selesai.
+3) Syarat jalan: status perangkat, data sensor wajib yang masih segar, level reservoir, budget pemakaian, dan tidak sedang maintenance.
+4) Langkah: pilih aksi berdasarkan capability perangkat, durasi atau target volume jika pengukur mendukungnya, langkah tunggu, pemeriksaan hasil, dan tugas manual.
+5) Batas: maksimum durasi, jumlah siklus harian, jeda antarsiklus, batas volume/nutrisi, batas antrian, serta respons jika kondisi berubah.
+6) Aktivasi: preview jadwal berikutnya, hasil validasi, “Uji dengan data demo”, lalu aktifkan.
+
+Pilihan aksi hanya menampilkan capability yang tersedia. Jangan menyediakan “ukur volume aktual” jika tidak ada flow meter, atau dosing jika tidak ada perangkat dosing.
+Target berbasis volume membutuhkan data aliran; jika hanya durasi tersedia, tampilkan volume sebagai estimasi dari debit asumsi.
+Data sensor yang stale/invalid menghasilkan “Tidak dapat dievaluasi”, bukan false atau nol.
+
+D. Template rutinitas yang harus berfungsi
+
+1) Penyiraman terjadwal
+- Trigger jadwal, zona A lalu B pada contoh demo.
+- Cek konfigurasi, ketersediaan air, perangkat, resource pompa, dan batas kumulatif.
+- Jika profil memakai sensor media, evaluasi kebutuhan per zona. Media masih cukup basah -> skip zona dengan alasan, bukan gagal.
+- Jalankan urutan valve/pompa sesuai profil perangkat demo, pastikan acknowledgment, lalu verifikasi adanya aliran.
+- Hentikan berdasarkan target durasi/volume atau batas maksimum, mana yang tercapai lebih dahulu.
+- Verifikasi penghentian dan catat penggunaan air.
+- Jadwal contoh 10:00 WIB dan durasi demo boleh diubah. Angka ini tidak direkomendasikan sebagai jadwal paprika nyata.
+
+2) Penyiraman berdasarkan kondisi
+- Trigger pembacaan media di bawah batas yang dikonfigurasi selama jendela waktu tertentu.
+- Gunakan debounce, hysteresis, cooldown, dan batas harian agar sensor yang berfluktuasi tidak menyalakan pompa berulang.
+- Batas mulai dan batas pulih ditampilkan terpisah dengan unit sensor yang benar.
+- Jenis media, satuan, dan kalibrasi wajib jelas; jangan menganggap seluruh sensor mengukur persen kadar air yang sama.
+- Jangan memakai RH udara, confidence deteksi hama, atau satu frame kamera sebagai kebutuhan air akar.
+
+3) Pemberian nutrisi/fertigasi
+- Trigger jadwal yang merujuk profil nutrisi versi aktif.
+- Precheck reservoir air dan nutrisi, status injector/dosing, data wajib, serta kalibrasi sesuai capability.
+- Urutan demo: precheck -> bentuk aliran air -> verifikasi aliran -> dosing sesuai profil -> pembilasan bila ditetapkan profil dan kondisi memungkinkan -> penghentian -> verifikasi hasil.
+- Dosing baru berjalan jika aliran yang disyaratkan terkonfirmasi.
+- Jika aliran hilang, hentikan dosing dan masuk prosedur penghentian profil. Jangan terus dosing sambil menunggu sensor pulih.
+- Perlihatkan target dan penggunaan simulasi secara terpisah. Jika delivery tidak terkonfirmasi, tampil “Jumlah tersalurkan belum pasti”.
+- Jangan mengulang dosis otomatis setelah timeout/refresh karena bisa menghitung ganda.
+- Pantau EC/pH jika tersedia dan diperlukan profil; pembacaan di luar batas menghentikan/menahan proses sesuai aturan yang ditetapkan, bukan memicu racikan baru oleh AI.
+- Pembilasan tidak boleh dipaksa ketika reservoir kosong, terjadi kebocoran, atau jalur air tidak terkonfirmasi.
+- Runtime dan dosing berasal dari fixture netral yang berlabel demo. Tidak ada formula agronomis atau nilai aplikasi lapangan yang diasumsikan benar.
+
+4) Pengaturan lingkungan
+- Fan/exhaust atau actuator ventilasi simulasi dengan trigger suhu/RH, hysteresis, batas runtime, dan kondisi berhenti.
+- Fan yang berputar bukan bukti suhu sudah turun; pembacaan sensor terpisah menunjukkan respons lingkungan fixture.
+- Mister/penyemprot kabut atau shading hanya muncul jika capability dan profilnya tersedia.
+- Kendalikan konflik pendinginan/kelembapan melalui profil; jangan menghidupkan misting tanpa memperhatikan pembacaan RH.
+- Nama “Pengaturan lingkungan” tidak berarti “pengusir hama yang terbukti efektif”.
+
+5) Preventif
+- Jadwal pemeriksaan filter, kalibrasi, kebersihan lensa, kondisi screen, dan penggantian perangkap membuat tugas petugas secara otomatis.
+- Tugas tersebut tidak dianggap selesai hanya karena waktunya lewat.
+- Pembilasan saluran atau operasi perangkat preventif dapat otomatis jika hardware dan profilnya tersedia.
+- Perangkat pengusir hama yang sudah dikonfigurasi dapat memiliki jadwal/cooldown/batas runtime; tetap beri label efektivitas belum dievaluasi.
+- Bedakan jelas pekerjaan manusia dari aksi yang dapat dilakukan mesin.
+
+E. Mesin eksekusi bersama
+
+Setiap trigger menghasilkan AutomationRun dengan snapshot versi rutinitas dan parameter.
+Status run: Scheduled, Checking, Queued, Running, Verifying, Completed, Skipped, Blocked, Failed, Stopped, atau Needs reconciliation.
+Status step mengikuti pekerjaan yang benar-benar dilakukan. Perintah perangkat memakai ControlCommand bersama. Nama status berbahasa Inggris pada spesifikasi ini adalah enum internal; label UI diterjemahkan secara konsisten, misalnya Running = Berjalan dan Needs reconciliation = Perlu pemeriksaan status.
+
+Satu clock mendorong scheduler, urutan step, timeout, telemetry fixture, dan perhitungan pemakaian.
+Pada mode 10x/60x, proses semua batas waktu yang dilewati secara berurutan; jangan melompati stop/limit atau mengeksekusi slot dua kali.
+Gunakan key unik berdasarkan routine version + occurrence/trigger event + target untuk mencegah duplikasi.
+Sensor trigger harus mendeteksi episode kondisi, bukan menciptakan run baru setiap render.
+
+Jadwal menyimpan tanggal berlaku, hari, jam, dan timeZone Asia/Jakarta. Jangan menjadwalkan dari jam lokal browser yang mungkin berbeda.
+“Ke kejadian berikutnya” harus tetap mengevaluasi seluruh step dan syarat di antaranya.
+Sebelum perubahan konfigurasi, tampilkan run berikutnya agar jadwal dapat diperiksa.
+
+Sumber daya bersama:
+- PUMP-01 dipakai bersama A–B. Default satu zona memakai jalur ini pada satu waktu.
+- Fan independen boleh berjalan bersamaan.
+- Scheduler mengantrekan pekerjaan yang bentrok dan menampilkan perkiraan giliran serta batas waktu antrean.
+- Jika masa berlaku run habis saat antre, skip/block dengan alasan; jangan menjalankan penyiraman terlambat tanpa batas.
+- Manual run memakai resource lock dan budget kumulatif yang sama.
+- Definisikan urutan prioritas: emergency/stop dan batas operasi selalu mendahului pekerjaan biasa; kebijakan prioritas manual versus jadwal ditampilkan dan tidak memotong run secara diam-diam.
+
+F. Pembatasan operasi dan penanganan pengecualian
+
+Periksa sebelum mulai dan selama run sesuai relevansinya:
+- Perangkat wajib online dan tidak maintenance.
+- Data wajib segar, valid, dan kalibrasi sesuai profil.
+- Level reservoir cukup.
+- Flow/pressure yang disyaratkan tersedia.
+- Durasi, volume, jumlah siklus, dan nutrisi kumulatif masih dalam batas.
+- Tidak ada fault aktif, command sebelumnya yang belum jelas hasilnya, atau resource yang masih terkunci.
+
+Threshold dan durasi contoh disimpan dalam konfigurasi demo. Jangan mengubahnya menjadi rekomendasi universal.
+Input batas harus masuk akal dan memiliki validasi: non-negatif, maksimum >= target, batas harian konsisten, timezone valid, serta zona/perangkat sesuai.
+Syarat yang dibutuhkan dipilih per tindakan; kamera offline tidak otomatis memblokir irigasi yang memiliki sensor/aktuator independen.
+Jika sensor wajib tidak terpasang/stale, tahan run dan sebutkan sensor yang dibutuhkan. Fallback hanya boleh jika sudah ada kebijakan terkonfigurasi, bukan diasumsikan.
+
+Retry:
+- Boleh melakukan pembacaan ulang atau pemeriksaan koneksi terbatas.
+- Jangan mengulang dosing/aktuasi ketika delivery sebelumnya belum pasti.
+- Gangguan memicu prosedur stop yang sesuai profil perangkat, bukan pernyataan otomatis bahwa semuanya sudah berhenti.
+- Stop acknowledgment yang gagal -> Needs reconciliation, blokir start berikutnya pada resource terdampak, tampilkan tindakan pemeriksaan.
+- Kondisi kebocoran/flow tetap berjalan setelah stop menjadi pengecualian prioritas tinggi dalam demo.
+
+G. Kontrol operator dan batas browser
+
+Sediakan:
+- Jeda rutinitas: menahan kejadian berikutnya.
+- Lewati sekali: membatalkan hanya occurrence yang dipilih.
+- Hentikan run: mengirim permintaan stop simulator dan menunggu hasil.
+- Jalankan sekali: membuat run manual dengan syarat dan batas yang sama.
+- Override sementara: alasan, cakupan, dan waktu kedaluwarsa; tidak mengabaikan hard limit atau sensor yang diwajibkan.
+- Hentikan semua simulasi aktif: ruang lingkup jelas, menghentikan driver run dan menampilkan status akhir tiap command. Jangan menampilkan ini sebagai tombol emergency fisik tersertifikasi.
+
+Ketika browser disembunyikan atau sesi terputus, pause clock demo. Setelah kembali, minta pengguna melanjutkan simulasi; jangan mengejar seluruh jadwal yang terlewat.
+Pada refresh, tandai run yang sebelumnya aktif sebagai interrupted/Needs reconciliation. Jangan langsung mengaktifkan ulang pompa atau menambahkan dosis.
+Default missed-run policy = skip dengan alasan; tidak mengeksekusi backlog penyiraman/fertigasi sekaligus.
+Simpan definisi rutinitas dan histori, tetapi reset resource aktif secara terkontrol setelah reconciliation demo. Jangan membebaskan resource berstatus unknown seolah penghentian sudah terbukti.
+Beri penjelasan singkat: “Simulasi berjalan selama halaman aktif. Pada instalasi nyata, rutinitas dijalankan controller.”
+Tidak perlu membangun controller, backend scheduler, atau cloud dalam fase ini.
+
+H. Pemakaian dan manfaat yang dapat diperiksa
+
+Untuk tiap run, tampilkan:
+- Rencana dan realisasi durasi.
+- Target dan volume air demo terukur jika flow fixture tersedia.
+- Volume estimasi jika hanya debit asumsi tersedia.
+- Nutrisi yang tersalurkan menurut feedback demo atau status belum pasti.
+- Energi estimasi berdasarkan daya dan runtime, bukan angka meteran.
+- Alasan mengapa berjalan, dilewati, tertahan, atau berhenti.
+
+Jangan menyebut run selesai hanya karena toast muncul. Step/command harus mencapai kondisi selesai sesuai fixture.
+Gunakan pencatatan pemakaian yang sama pada Eksekusi, Riwayat, Perangkat, dan Biaya & penghematan. Runtime/telemetry menghasilkan estimasi penggunaan, bukan ExpenseRecord yang langsung dianggap dibayar.
+Estimasi bulanan dari jadwal adalah proyeksi; pisahkan dari realisasi demo dan jangan menagihkan keduanya sekaligus.
+Manfaat diperlihatkan melalui rutinitas yang berjalan tepat waktu, kejadian yang berhasil dilewati, serta waktu kerja yang diasumsikan pengguna. Jangan mengklaim persentase penghematan air/pupuk atau peningkatan hasil panen tanpa baseline.
+
+11. PERANGKAT: INVENTARIS DAN PEMELIHARAAN
+
+Tab:
+- Inventaris.
+- Kamera & sensor.
+- Pemeliharaan.
+
+Inventaris dasar berisi 12 perangkat observasi: satu kamera dan satu sensor suhu/RH per zona.
+Kelompok tambahan meliputi irigasi, nutrisi, lingkungan, serta pengendalian hama. KPI “Kamera & suhu/RH online” hanya merangkum dua jenis perangkat tersebut; jumlah semua perangkat pada halaman Perangkat dihitung dari inventaris sebenarnya.
+Sediakan capability perangkat, resource group, kondisi kalibrasi, hubungan pompa–valve–zona, dan rutinitas yang menggunakannya. Perangkat yang masuk mode pemeliharaan tidak boleh dipakai rutinitas baru. Jika sebuah run aktif terdampak, tampilkan pilihan penghentian yang eksplisit.
+
+Detail:
+- ID, tipe, zona, koneksi, pembacaan/frame terakhir, sumber daya contoh, dan tanggal perawatan.
+- Preview yang sama seperti halaman lain.
+- Tiket gangguan dan penanggung jawab.
+- Tugas seperti membersihkan lensa, mengganti/memeriksa perangkap, memeriksa enclosure/kabel, dan kalibrasi sensor.
+- Jadwal pemeliharaan dapat diedit; jangan mengklaim interval berlaku untuk semua perangkat.
+- Kamera E-01 offline menampilkan tiket DEV-008 dan CTA pencatatan perbaikan.
+- “Simulasikan pulih” mengubah state koneksi dan membuat event riwayat, tetapi tidak menghapus riwayat gangguan.
+
+Hubungan perangkat dan pengeluaran:
+- Tab utama tetap Inventaris, Kamera & sensor, Pemeliharaan. Biaya perangkat ada di detail, tidak perlu tab/menu akuntansi baru.
+- Daftar inventaris menampilkan kolom ringkas “Biaya terkait periode” dengan penanda Tercatat/Alokasi/Estimasi, bukan harga beli saja.
+- Filter biaya periode terpisah dari timestamp koneksi saat ini. Contoh: status perangkat 13 Oktober, biaya September.
+- Pilih perangkat membuka panel detail berisi Kondisi, Pemakaian, Biaya terkait, dan jadwal perawatan; tampilkan informasi bertahap agar tidak padat.
+- Detail PUMP-01 menampilkan penggunaan 30 jam pada September, estimasi 27 kWh, serta biaya terkait Rp85.500 yang merujuk ke catatan di bagian 13.
+- Harga perolehan hanya satu field sekunder; biaya listrik dan servis berulang lebih relevan untuk operasi harian.
+- CTA “Catat perawatan” membuka form singkat yang sudah terisi perangkat dan greenhouse. Biaya opsional; pekerjaan perawatan tanpa biaya tetap boleh dicatat.
+- CTA “Lihat pengeluaran” membawa deviceId dan periode ke tab Pengeluaran.
+- Dari pengeluaran, tautan aset membawa pengguna kembali ke perangkat yang sama.
+- Perangkat lama/milik sendiri tidak dimasukkan ulang sebagai pembelian baru. Penonaktifan tidak menghapus biaya historis.
+- Badge biaya meningkat harus memiliki periode pembanding dan angka. Tanpa data pembanding, tampilkan biaya saja.
+- Jangan menghitung tagihan greenhouse dua kali setelah membagikannya ke perangkat.
+- Tampilkan satu tindakan relevan per perangkat, misalnya cek runtime pompa atau jadwalkan servis, disertai alasan dan data sumber.
+- Dalam fixture operasional lengkap terdapat 25 perangkat (12 observasi + 13 otomasi), 24 online dan Kamera E-01 offline. Detail biaya mengikuti periode pilihan, bukan jumlah koneksi online.
+
+12. RIWAYAT & LAPORAN
+
+- Timeline gabungan pengamatan, inspeksi, rencana, aktivasi/perubahan versi rutinitas, start otomatis, skip karena media masih basah, antrean resource, step execution, limit stop, manual override, command acknowledgment, gangguan, dan pemeliharaan.
+- Setiap run memiliki drill-down langkah dan alasan transisi. Ringkas aktivitas berulang agar timeline tidak dipenuhi event setiap detik.
+- Laporan otomasi membedakan jadwal terpenuhi, dilewati secara sah, diblokir, gagal, dihentikan, dan status belum terkonfirmasi. Durasi pompa tidak otomatis sama dengan volume air yang terukur.
+- Filter tanggal, zona, jenis event, dan petugas.
+- Detail event memuat waktu, aktor, status sebelumnya/sesudahnya, objek terkait, dan bukti.
+- Kasus, rencana, perangkat, pemeliharaan, dan catatan pengeluaran saling tertaut.
+- Ekspor CSV bekerja di browser; aman terhadap formula injection pada kolom teks pengguna.
+- Buat tampilan laporan ramah cetak dengan window.print(). Tidak perlu library PDF berat.
+- Laporan menyebut periode, cakupan data, temuan, tindakan, evaluasi, downtime, pelaksanaan rutinitas, air/nutrisi/energi, dan asumsi biaya jika disertakan. Tambahkan denominator untuk tingkat penyelesaian; jadwal yang sengaja dilewati karena media masih basah bukan kegagalan.
+- Laporan biaya dapat diekspor sesuai filter: pengeluaran tercatat, investasi terpisah, alokasi, estimasi, budget, baseline, selisih, dan kelengkapan data. Total laporan harus sama dengan menu biaya.
+- Cantumkan bahwa seluruh data adalah demo. Jangan menyebut localStorage sebagai audit trail yang aman untuk produksi.
+
+13. BIAYA & PENGHEMATAN: PENGELUARAN BERKALA YANG TERHUBUNG KE PERANGKAT
+
+A. Tujuan dan antarmuka yang sederhana
+
+Menu ini menjawab: berapa uang yang keluar pada periode ini, dipakai untuk apa, perangkat mana yang menambah biaya, dan berapa selisih operasional dibanding kondisi sebelum otomasi.
+Label sidebar adalah “Biaya & penghematan”; route tetap /biaya.
+Pertahankan dua menu utama: Perangkat untuk kondisi/pemakaian aset; Biaya & penghematan untuk pengeluaran serta perbandingan. Jangan menambah menu akuntansi.
+
+Tiga tab saja:
+- Ringkasan: pengeluaran periode, anggaran, tren, penyebab perubahan, dan tindakan berikutnya.
+- Pengeluaran: daftar catatan dan form singkat.
+- Penghematan: pembanding sebelum–sesudah beserta sumber dan batas perbandingan.
+
+Kalkulator pemasangan awal dipindahkan ke tombol sekunder “Rencana perangkat”, berupa drawer. Ini membantu belanja/ekspansi, bukan menjadi halaman utama biaya.
+Tidak ada jurnal debit/kredit, modul pajak, payroll, sinkronisasi bank, atau procurement ERP.
+
+Filter bersama: greenhouse, zona, bulan ini, bulan lalu, 3 bulan, rentang khusus, dan siklus tanam bila tersedia.
+Periode default layar contoh: September 2026, satu bulan yang sudah selesai. Pilihan periode tetap dapat diubah.
+Terapkan filter yang sama pada KPI, rincian, ekspor, serta tautan dari/ke perangkat. Simpan filter dalam URL atau state navigasi agar tidak hilang ketika kembali.
+
+B. Satu catatan, beberapa pintu masuk
+
+Sumber tunggal adalah ExpenseRecord. Pembelian, servis, tagihan, dan bukti tidak boleh diduplikasi di menu berbeda.
+Setiap catatan minimal memiliki ID, tanggal bayar, kategori, nominal Rupiah, greenhouse, sumber, dan status.
+Relasi opsional: deviceId, zoneId, maintenanceId, routineId, invoice/reference, lampiran lokal, dan periode pemakaian.
+Device menyimpan identitas aset, biaya/tanggal perolehan jika diketahui, tanggal aktif, status, capability, serta tautan catatan pengeluaran—bukan salinan ledger tersendiri.
+
+Alur yang wajib:
+1. Dari Perangkat pilih PUMP-01 -> lihat biaya terkait periode -> buka Pengeluaran dengan filter perangkat dan periode yang sama.
+2. “Catat perawatan” dari perangkat membuka form dengan perangkat/greenhouse terisi; setelah disimpan, SATU ExpenseRecord muncul di detail perangkat dan menu biaya.
+3. Dari sebuah pengeluaran klik chip perangkat untuk kembali ke detail aset tersebut.
+4. Konfirmasi pembelian dari Rencana perangkat boleh menautkan aset existing atau membuat aset baru. Item rencana belum dibeli tidak masuk inventaris terpasang maupun pengeluaran aktual.
+5. Menyelesaikan tugas perawatan tidak otomatis berarti biaya sudah dibayar. Menyimpan biaya juga tidak otomatis menyatakan perawatan fisik selesai.
+
+Jika tagihan mencakup beberapa perangkat, simpan satu record dengan CostAllocation. Total alokasi tidak boleh melebihi nominal tagihan; selisih yang belum dibagikan tetap terlihat.
+Contoh tagihan listrik greenhouse tidak dijumlahkan lagi bersama “biaya listrik pompa” karena angka pompa adalah bagian alokasi dari tagihan yang sama.
+Perangkat bersama tidak boleh dibebankan penuh ke tiap zona. Tampilkan dasar pembagian: pembacaan submeter, runtime, estimasi daya, atau pembagian manual.
+Catatan historis tetap dapat ditelusuri meskipun perangkat dipindah atau dinonaktifkan; scope periode lama tidak berubah diam-diam.
+
+C. Tiga jenis angka yang tidak boleh dicampur
+
+1) Pengeluaran tercatat: pembayaran yang dikonfirmasi pengguna atau fixture ledger demo, berdasarkan tanggal bayar.
+2) Estimasi pemakaian: runtime x daya, volume x tarif, atau pemakaian nutrisi x harga satuan. Bukan pembayaran.
+3) Rencana/proyeksi: belanja yang belum terjadi dan perkiraan biaya periode mendatang.
+
+Setiap angka mempunyai badge sumber singkat: Tercatat, Terukur demo, Estimasi, Alokasi, atau Proyeksi.
+Data simulator tidak otomatis membuat tagihan “terbayar”.
+Ketika tagihan nyata dicatat, hubungkan dengan estimasi periode/kategori tersebut; jangan menambah keduanya ke total pengeluaran.
+Lampiran nota mendukung catatan, tetapi jangan menyebut nominal terverifikasi hanya karena ada file yang diunggah.
+Biaya yang belum diketahui ditampilkan sebagai belum tersedia, bukan Rp0.
+
+Untuk pembelian bahan yang dipakai beberapa bulan, sediakan field opsional “Untuk pemakaian kapan?” dengan default periode saat ini.
+Pengeluaran kas tampil penuh pada tanggal pembayaran. Perbandingan operasional memakai bagian biaya untuk periode pemakaian yang dipilih; metode pembagian harus terlihat.
+Tidak perlu inventori gudang lengkap. Jika alokasi konsumsi belum dapat ditentukan, tandai kategori tidak sebanding dan jangan mengklaim penghematan final.
+Biaya investasi/perolehan perangkat ditampilkan terpisah dari operasional berulang. Tampilkan total uang keluar dan rincian investasi bila ada pembelian pada periode tersebut.
+
+D. Ringkasan biaya dan pencatatan cepat
+
+Header “Biaya & penghematan”, subteks “Pantau pengeluaran dan pahami perubahan biaya kebun.”
+CTA utama “Catat pengeluaran”; sekunder “Rencana perangkat”.
+KPI maksimal empat:
+- Pengeluaran operasional tercatat.
+- Selisih operasional terhadap acuan, dengan label Estimasi jika baseline asumsi.
+- Anggaran periode dan sisa/kelebihannya.
+- Jumlah catatan atau kategori yang belum lengkap. Jangan mengklaim data lengkap dari banyaknya baris saja.
+
+Konten:
+- Tren pengeluaran antarperiode; periode belum selesai diberi penanda.
+- Rincian Air, Nutrisi, Listrik, Internet/layanan, Perawatan, dan Tenaga dibayar.
+- “Yang berubah” menampilkan biaya yang turun dan naik. Listrik/internet/servis baru tetap masuk pembanding.
+- Tiga tindakan relevan paling banyak, misalnya “Periksa jadwal pompa”, “Lengkapi tagihan air”, atau “Tinjau biaya servis”.
+- Setiap tindakan ditautkan ke perangkat/rutinitas/catatan penyebabnya.
+- Jangan langsung mematikan ventilasi atau memotong dosis demi biaya; tampilkan bukti dan opsi tinjauan.
+
+Form cepat cukup:
+Tanggal, Kategori, Nominal, Terkait greenhouse/perangkat/zona, dan Catatan/bukti opsional.
+Detail lanjutan seperti periode pemakaian, alokasi, dan referensi tagihan berada dalam bagian expand.
+Default nominal kosong, bukan angka penghematan yang dibuat sistem.
+Template biaya rutin membuat pengingat/draft saat periode tiba; pengguna mengonfirmasi nominal pembayaran. Perubahan tarif berlaku menurut tanggal efektif, tidak menulis ulang histori.
+Sediakan edit, void dengan alasan, undo, dan penanda kemungkinan duplikasi. Klik simpan ganda tidak menghasilkan dua record.
+Tidak ada pengiriman uang atau pembayaran sungguhan.
+
+E. Penghematan yang bisa dijelaskan
+
+Tampilkan pembanding “Sebelum otomasi” dan “Sesudah diterapkan” untuk scope dan periode yang setara.
+Baseline dapat berasal dari:
+- Catatan sebelum pemasangan yang dipilih pengguna.
+- Asumsi biaya manual yang diisi pengguna, berlabel “Acuan estimasi — belum divalidasi”.
+
+Simpan baselineVersion, sumber, periode acuan, luas/zona aktif, jumlah hari operasi, tanaman/fase, tarif, kategori yang tercakup, dan tanggal penerapan.
+Tidak perlu menghalangi pemakaian saat belum ada baseline: tampilkan pengeluaran terlebih dahulu, lalu CTA “Isi biaya sebelum otomasi”.
+Tanpa baseline valid, kartu penghematan menampilkan “Belum dapat dibandingkan”, bukan 0% atau janji hemat.
+Nilai negatif ditampilkan jujur sebagai “Biaya meningkat”; jangan dipaksa hijau.
+
+Rumus pada panel rincian:
+- Biaya acuan setara = biaya baseline setelah penyesuaian periode/cakupan yang dijelaskan.
+- Selisih operasional bersih = biaya acuan setara - biaya operasional periode yang dapat dibandingkan.
+- Persentase selisih = selisih / biaya acuan setara x 100, hanya jika pembagi > 0.
+- Biaya baru seperti listrik pompa, internet, layanan, dan pemeliharaan sudah termasuk biaya sesudah; jangan dikurangkan dua kali.
+
+Perbandingan awal mendukung periode dengan lama, zona, fase, dan tarif yang sama. Jika berbeda, tampilkan ketidaksetaraan dan penyesuaian yang dapat diperiksa.
+Normalisasi per hari atau per m² hanya digunakan bila asumsi linear masuk akal dan dipilih secara eksplisit. Jangan menganggap perubahan musim, fase tanaman, luas, atau produksi otomatis selesai dengan pembagian sederhana.
+Jika data belum sebanding, tampilkan “Selisih pengeluaran” dengan batasnya, bukan “Efisiensi terbukti”.
+Untuk air/listrik, pisahkan perubahan jumlah pemakaian dari perubahan tarif bila data kuantitas tersedia. Jumlah pemakaian yang turun pada tarif sama berbeda dari diskon harga.
+Selisih sebelum–sesudah tidak membuktikan seluruh perubahan disebabkan Vigor.
+Acuan yang belum diisi, pengamatan sensor yang hilang, atau pengeluaran yang belum dicatat membuat hasil parsial dan menampilkan kategori yang belum termasuk.
+
+Bulan berjalan:
+- Bandingkan realisasi sampai tanggal yang sama pada baseline yang sebanding.
+- Proyeksi akhir bulan ditampilkan terpisah dengan asumsi yang jelas.
+- Jangan membandingkan tanggal 1–13 dengan satu bulan penuh dan menyebut sisa harinya penghematan.
+
+Tenaga:
+- Pengurangan biaya tenaga dihitung sebagai uang hanya bila pengeluaran tenaga dibayar memang berubah.
+- Jam kerja pemilik yang berkurang tampil sebagai “Waktu terbantu”, terpisah dari penghematan kas.
+- Jangan menghitung manfaat waktu yang sama sekali lagi jika sudah dimasukkan sebagai biaya tenaga yang dihemat.
+
+Investasi:
+- Tampilkan biaya awal tercatat dan estimasi biaya sepanjang periode pada panel sekunder.
+- Perkiraan balik modal sederhana = investasi tambahan / rerata selisih operasional bersih bulanan, hanya ketika positif dan basisnya jelas.
+- Jika baseline masih asumsi, label “Skenario balik modal”, bukan “Sudah balik modal”.
+- Jika data tidak cukup atau selisih <= 0, tampilkan belum dapat diperkirakan.
+- Tidak ada ROI terjamin, klaim hasil panen meningkat, atau klaim penghematan nyata hanya dari mockup.
+- Belanja awal tidak dicampur ke setiap bulan sebagai biaya operasional lalu ditambahkan lagi sebagai investasi.
+
+F. Fixture demo lintasmenu yang harus tepat
+
+Gunakan September 2026, 30 hari, Greenhouse 01, 6 zona. Baseline di bawah adalah ASUMSI DEMO untuk scope yang sama, bukan catatan nyata pengguna.
+Biaya sesudah merupakan catatan sintetis; semua pembayaran dalam fixture ini dialokasikan pada September sehingga biaya periode dan kas operasional kebetulan sama.
+
+Kategori | Acuan manual demo | Tercatat demo September | Selisih
+Air | Rp300.000 | Rp210.000 | Rp90.000 lebih rendah
+Nutrisi | Rp600.000 | Rp480.000 | Rp120.000 lebih rendah
+Listrik | Rp100.000 | Rp135.000 | Rp35.000 lebih tinggi
+Internet | Rp0 | Rp45.000 | Rp45.000 lebih tinggi
+Perawatan | Rp100.000 | Rp110.000 | Rp10.000 lebih tinggi
+Tenaga harian dibayar | Rp300.000 | Rp100.000 | Rp200.000 lebih rendah
+Total | Rp1.400.000 | Rp1.080.000 | Rp320.000 lebih rendah (22,9%)
+
+Di dekat Rp320.000 / 22,9%, tulis “Estimasi terhadap acuan manual”, dengan detail “Acuan belum divalidasi”.
+Anggaran September Rp1.200.000; sisa Rp120.000. Ini bukan penghematan terhadap baseline: budget dan baseline adalah dua konsep berbeda.
+Tujuh catatan:
+- EXP-001, 30 September, Air Rp210.000, greenhouse.
+- EXP-002, 2 September, Nutrisi Rp480.000, greenhouse.
+- EXP-003, 30 September, Listrik Rp135.000, greenhouse.
+- EXP-004, 1 September, Internet Rp45.000, CTRL-01 sebagai gateway/controller.
+- EXP-005, 6 September, Perawatan pompa Rp45.000, PUMP-01.
+- EXP-006, 20 September, Kalibrasi Rp65.000, EC-01; kategori Perawatan.
+- EXP-007, 28 September, Tenaga harian Rp100.000, greenhouse.
+
+Alokasi listrik EXP-003 (bukan pengeluaran tambahan):
+PUMP-01 Rp40.500; DOSE-01 Rp27.000; CTRL-01 Rp4.500; Kamera E-01 Rp4.500; perangkat lain Rp58.500. Jumlah tetap Rp135.000.
+Pemetaan ID kamera mengikuti manifest existing; jangan membuat kamera E baru.
+Untuk PUMP-01, estimasi daya 900 W x 30 jam = 27 kWh. Tagihan demo greenhouse 90 kWh x Rp1.500 = Rp135.000; alokasi pompa 30% = Rp40.500.
+Ini contoh pembagian berbasis estimasi, bukan pembacaan submeter pompa. Runtime 30 jam berasal dari fixture histori September dengan versi rutinitas saat itu, bukan proyeksi dari jadwal demo v1.2 pada 13 Oktober. Buat histori yang jumlah runtime-nya dapat direkonsiliasi ke 30 jam.
+Detail pompa September: listrik teralokasi Rp40.500 + servis EXP-005 Rp45.000 = Rp85.500.
+Perangkat lain yang tampil: DOSE-01 Rp27.000; CTRL-01 Rp49.500 termasuk internet; EC-01 Rp65.000; Kamera E-01 Rp4.500.
+Air/nutrisi greenhouse tidak dimasukkan ulang sebagai seluruh “biaya pompa”.
+Jumlah biaya pada detail perangkat boleh lebih kecil daripada biaya kebun karena ada pengeluaran tingkat greenhouse yang tidak dialokasikan ke perangkat.
+
+Untuk periode lain, buat fixtures tersendiri yang dapat direkonsiliasi. Jangan sekadar mengganti nama bulan pada angka yang sama.
+Skenario Oktober sampai tanggal demo harus berlabel periode belum selesai; kategori belum diketahui tidak dianggap nol.
+Status koneksi Perangkat tetap snapshot 13 Oktober; penggunaan/biaya September punya label periodenya sendiri.
+
+G. Perencana pemasangan awal sebagai fitur pendukung
+
+Pertahankan kalkulator lama dalam drawer “Rencana perangkat”:
+preset monitoring 2 zona, 6 zona, tambahan irigasi/fertigasi, dan perangkat yang sudah dimiliki.
+Tarik inventaris existing; pengguna tidak perlu mendaftarkan aset yang sama dua kali.
+Tandai komponen Tersedia, Perlu dibeli, atau Harga belum diisi.
+Simpan rencana tanpa menambah pengeluaran. Aksi “Catat pembelian” baru membuat record yang dikonfirmasi dan menautkan aset.
+Contoh lama Rp2.860.000 tetap sebuah simulasi rencana monitoring 2 zona, bukan investasi tercatat dan bukan paket lengkap otomasi.
+Fixture perencana: 2 kamera x Rp300.000; 2 sensor suhu/RH x Rp200.000; gateway Rp700.000; daya/enclosure Rp300.000; kabel/mounting Rp200.000; instalasi Rp300.000; bahan awal Rp100.000. Subtotal Rp2.600.000 + cadangan 10% Rp260.000 = Rp2.860.000. Harga belum divalidasi pasar.
+Estimasi biaya rutin perencana bersumber dari profil penggunaan/tarif yang sama dengan menu biaya; tandai sebagai proyeksi.
+TCO rencana = investasi tambahan + proyeksi operasional + penggantian yang belum tercakup; hindari double count dan jelaskan periode.
+Paket murah tetap menyebut cakupan, perangkat bersama, pemeliharaan, serta item belum dihitung. Tidak ada harga pasar yang diklaim telah diverifikasi.
+
+
+14. DATA DEMO YANG KONSISTEN
+
+Satu sumber data bersama, bukan angka terpisah di setiap halaman.
+
+Fixture utama:
+- Greenhouse 01, Kebun Bogor.
+- Paprika merah, fase berbuah.
+- Luas total 360 m²; luas tanam 288 m².
+- Zona A–F, masing-masing 48 m² dan 72 tanaman tercatat; total 432.
+- Siklus PAP-2026-08, tanam 10 Agustus 2026.
+- Waktu awal demo: 13 Oktober 2026 09:42 WIB.
+- Inventaris observasi awal: 12 kamera/sensor suhu-RH; 11 online, 1 offline. Perangkat otomasi fixture berada pada kelompok terpisah dan ikut dihitung pada total inventaris.
+- Kamera: A-01, B-02, C-01, D-01, E-01, F-01; ID sensor A-01 sampai F-01, dengan prefix/type berbeda agar ID global unik.
+- Zona A, B, C, D memiliki monitoring tervalidasi.
+- Zona B: kasus INS-024 perlu inspeksi, belum ada petugas; suhu 28,4 °C, RH 76%; tren tangkapan baru meningkat pada tiga pengamatan terakhir.
+- Zona C: INS-023 dalam pemantauan; inspeksi 12 Oktober 15:40 memeriksa 12 tanaman, 2 bergejala; tindak lanjut 14 Oktober oleh Budi Santoso.
+- Zona E: kamera offline sejak 08:10, sensor online; gangguan terdeteksi 08:20, tiket DEV-008 dibuat 08:25, menunggu teknisi.
+- Zona F: dua perangkat online, tetapi pemasangan/data belum tervalidasi; tidak boleh dianggap terpantau lengkap.
+- Cakupan pengamatan hama awal: 4 dari 6 zona. Jelaskan bahwa ini berbeda dari jumlah perangkat online maupun cakupan zona yang memiliki aktuator otomasi.
+- Kasus selesai: INS-022 Zona A 11 Oktober, INS-021 Zona D 10 Oktober, INS-020 Zona B 9 Oktober, INS-019 Zona A 8 Oktober.
+- Ringkasan awal: 1 perlu inspeksi, 1 dipantau, 4 kasus selesai dalam 7 hari.
+- Budi Santoso adalah operator fiktif untuk demo.
+
+Tren:
+Gunakan 8–13 Oktober dengan interval 24 jam yang setara. Angka merupakan tangkapan baru per interval, bukan hitungan kumulatif yang dihitung ulang. Zona B meningkat, misalnya berakhir di 26; zona lain yang valid sekitar 4–7. Data tidak tersedia pada E/F menggunakan null.
+Jika lama interval berbeda, normalisasi atau beri penjelasan yang jelas.
+
+Gunakan satu demo clock terpisah dari jam perangkat pengguna. Seluruh halaman memulai pada tanggal fixture yang sama; jangan membuat data 2026 terlihat sebagai livestream saat ini.
+Tambahkan profil “Operasional otomatis” sebagai demo utama, berisi fixture perangkat irigasi untuk Zona A–B, nutrisi pada Zona A, dan fan lingkungan. Profil “Monitoring saja” tetap tersedia untuk membandingkan capability dan biaya.
+Perangkat tambahan memiliki ID eksplisit: CTRL-01, PUMP-01, VALVE-A, VALVE-B, LEVEL-01, FLOW-01, MEDIA-A, MEDIA-B, DOSE-01, NUTRI-LEVEL-01, EC-01, PH-01, dan FAN-01. Definisikan kelompok dan resource sharing; jangan menciptakan sensor tersembunyi.
+Sediakan skenario deterministik: normal, temuan meningkat, perangkat offline, sensor stale, perintah gagal, data belum cukup, media sudah basah, tangki rendah, flow tidak muncul, flow tidak berhenti, dan tab/reload terputus.
+Fixture jadwal berikutnya: penyiraman A–B pukul 10:00 WIB dan fertigasi A pukul 10:30 WIB pada demo 13 Oktober 2026. Jadwal/durasi/target adalah angka untuk demonstrasi UI, bukan rekomendasi budidaya.
+Tombol “Putar simulasi” menjalankan clock dan event otomatis tanpa tombol Start untuk setiap rutinitas. Sediakan kecepatan 1x/10x/60x serta “Ke kejadian berikutnya”. Reset mengembalikan seluruh state setelah konfirmasi.
+
+15. MODEL DATA DAN IMPLEMENTASI STATE
+
+Definisikan tipe untuk:
+Greenhouse, Zone, CropCycle, Device, DeviceCapability, SensorReading, CameraFeed, Observation, PestCase, Inspection, ControlPlan, ControlCommand, AutomationRoutine, RoutineVersion, Schedule, Trigger, GuardCondition, NutrientProfile, AutomationRun, StepRun, ResourceLock, ManualOverride, UsageRecord, MaintenanceTicket, ActivityEvent, ExpenseRecord, CostAllocation, RecurringExpenseTemplate, PeriodBudget, SavingsBaseline, SavingsComparison, CostConfiguration, dan CostItem.
+
+Pisahkan:
+- Data domain dan relasi ID.
+- State UI seperti filter, selected zone, dialog, dan tampilan 2D/3D.
+- Simulator, demo clock, scheduler, antrean resource, dan run yang berjalan.
+- Selector untuk KPI dan agregasi.
+
+Gunakan discriminated unions untuk status; jangan mengizinkan transisi yang tidak masuk akal.
+Setiap operasi yang mengubah kasus/rencana/perangkat menghasilkan event yang tertaut.
+Buat fungsi transisi simulator terpusat, bukan timer yang tersebar di banyak kartu. ControlCommand dipakai bersama oleh run otomasi dan rencana pengendalian hama; satu run memiliki beberapa step serta command, bukan salinan engine lain.
+AutomationRun menyimpan routineVersionId, triggerEventId/scheduledSlot, zona, resource, snapshot parameter, step, alasan skip/block/stop, dan rekaman penggunaan. Perubahan routine tidak mengubah snapshot run yang sudah mulai.
+Gunakan timer yang dibersihkan saat unmount/reset; cegah update ganda.
+Jangan menyimpan File, Blob, DOM node, WebGL object, atau timer ID dalam localStorage.
+Simpan perubahan kecil seperti rencana, inspeksi, definisi/versi rutinitas, jadwal, profil nutrisi, pengeluaran, alokasi, baseline, anggaran periode, konfigurasi biaya, dan preferensi dengan schemaVersion serta reset fallback. Riwayat run disimpan secara terbatas; jangan memenuhi localStorage dengan telemetry setiap detik.
+Lampiran lokal bersifat session-only dan diberi label bila tidak dipersist.
+Data malformed/storage unavailable harus pulih dengan pesan singkat, bukan blank page.
+
+Struktur yang disarankan:
+src/app — router, providers, shell
+src/components/ui — komponen dasar
+src/components/monitoring — kamera, sensor, status
+src/features/overview
+src/features/greenhouse
+src/features/pests
+src/features/control
+src/features/automation
+src/features/devices
+src/features/history
+src/features/costs
+src/data — fixtures, scenarios, asset manifest
+src/domain — types, selectors, calculations, transitions, scheduler, guards, resources
+src/store
+src/styles
+public/assets — aset pengguna yang sudah dipetakan
+
+Sesuaikan struktur dengan repo; jangan membuat lapisan abstraksi yang tidak diperlukan. Cukup ada batas yang jelas antara fixtures dan komponen agar integrasi produksi kelak tidak memerlukan penulisan ulang UI.
+
+16. INTERAKSI DAN AKSESIBILITAS
+
+- Setiap CTA melakukan perubahan, navigasi, ekspor, membuka detail, atau menjelaskan alasan disabled.
+- Tidak ada tombol kosong dengan toast “berhasil” tanpa perubahan nyata.
+- Form memiliki validasi inline; feedback sukses menyebut apa yang berubah.
+- Keyboard dapat menavigasi menu, tabel, tab, pilihan zona, dan dialog.
+- Focus visible; dialog mengelola focus dengan benar dan dapat ditutup.
+- Kontrol utama memiliki target sentuh nyaman; input memiliki label.
+- Chart dan model 3D memiliki alternatif tekstual/tabel.
+- Hormati prefers-reduced-motion.
+- Loading skeleton, empty state, error state, dan retry harus berbeda.
+- Gunakan loading sungguhan saat asset dimuat; jangan menambah delay palsu di semua halaman.
+- Hindari horizontal overflow seluruh halaman; tabel boleh punya container scroll.
+- Jangan menjanjikan aplikasi sepenuhnya offline atau selalu aktif 24/7. Prototype memakai aset/data lokal; scheduler hanya hidup ketika simulator browser berjalan. Pada produk nyata, eksekusi rutin perlu berada di controller/gateway, dengan dashboard untuk konfigurasi dan pengawasan. Implementasi controller/backend tersebut berada di luar scope ini.
+
+17. ALUR DEMO YANG HARUS BERHASIL
+
+A. Dari Ringkasan klik prioritas Zona B.
+B. Buka INS-024, tinjau bukti dan trend, assign Budi.
+C. Isi hasil inspeksi valid, lalu buat rencana pengendalian nonkimia atau simulasi modul uji.
+D. Review zona, perangkat, durasi, dan kebutuhan approval.
+E. Mulai simulasi, lihat acknowledged/running, lalu hentikan atau tunggu selesai.
+F. Buka Riwayat; event inspeksi, approval, dan command terlihat dengan ID yang sama.
+G. Jadwalkan evaluasi; kasus menjadi Dipantau, bukan otomatis Selesai.
+H. Jalankan skenario perangkat offline; start harus diblokir dengan alasan.
+I. Buka Greenhouse, pilih Zona E melalui 3D maupun 2D; keduanya membuka tiket DEV-008 yang sama.
+J. Dari Biaya & penghematan buka Rencana perangkat, ubah preset 2 ke 6 zona atau tandai controller sudah dimiliki. Proyeksi berubah, tetapi inventaris dan pengeluaran tercatat belum bertambah.
+K. Ekspor laporan/CSV dan reset demo; data kembali konsisten.
+L. Di Otomasi, aktifkan rutinitas penyiraman sekali, lalu jalankan demo clock ke 10:00. A lalu B berjalan otomatis tanpa approval per run dan tidak memakai pompa yang sama secara bersamaan.
+M. Ubah skenario MEDIA-B menjadi cukup basah sebelum giliran B; B dilewati dengan alasan, tanpa kegagalan palsu.
+N. Jalankan fertigasi terkonfigurasi pukul 10:30; validasi -> aliran air -> nutrisi -> pembilasan yang dikonfigurasi -> verifikasi selesai, semuanya berjalan otomatis dalam simulator.
+O. Picu tangki rendah/flow gagal saat run; step berikutnya diblokir dan urutan penghentian profil dijalankan. Jika stop tidak terkonfirmasi, UI tidak menyebut perangkat sudah mati.
+P. Klik “Lewati sekali”, lalu jalankan event slot tersebut; tidak ada run. Slot berikutnya tetap dijadwalkan.
+Q. Pause jadwal tidak menghentikan run aktif diam-diam; kontrol stop aktif tetap terpisah. Reload tidak mengeksekusi dosis ulang atau semua jadwal yang terlewat.
+R. Ubah profile/version yang sudah aktif; review ulang konfigurasi baru hanya sekali, lalu run berikutnya kembali otomatis.
+S. Filter laporan otomasi dan telusuri alasan skip, penggunaan air estimasi/terukur, dan command yang belum terkonfirmasi.
+T. Dari PUMP-01 pilih biaya September, lihat Rp85.500 dan buka dua sumbernya: alokasi listrik Rp40.500 serta EXP-005 Rp45.000. Total tagihan listrik greenhouse tetap Rp135.000.
+U. Catat servis baru Rp50.000 pada 13 Oktober melalui perangkat. ExpenseRecord yang sama muncul di Oktober, tetapi total September tidak berubah. Edit/void tidak menciptakan duplikasi.
+V. Pilih September: tujuh pengeluaran berjumlah Rp1.080.000; budget Rp1.200.000 menyisakan Rp120.000; baseline asumsi Rp1.400.000 menghasilkan estimasi selisih Rp320.000 atau22,9%. Ketiga angka memakai basis yang berbeda dan diberi label.
+W. Hilangkan baseline atau satu kategori biaya wajib: estimasi penghematan menjadi belum dapat dibandingkan/parsial. Nilai yang hilang tidak dianggap nol.
+X. Buka pembelian nutrisi lintasbulan: kas tampil pada tanggal bayar, biaya pembanding dibagi menurut periode pemakaian yang dicatat, tanpa menggandakan total.
+Y. Ubah periode/scope, telusuri pengeluaran ke perangkat dan kembali; filter tetap sama. Biaya meningkat ditampilkan sebagai kenaikan, bukan disembunyikan.
+
+18. KRITERIA SELESAI DAN PENYERAHAN
+
+- Semua delapan halaman terimplementasi dan saling terhubung, termasuk menu Otomasi & rutinitas yang benar-benar mengeksekusi jadwal demo.
+- Build, typecheck, dan lint berhasil; tidak ada error runtime utama.
+- Periksa alur demo di atas dan responsivitas pada ukuran yang ditentukan.
+- Uji fungsi biaya: rencana Rp2.860.000 tidak menjadi pengeluaran aktual; total tujuh catatan September Rp1.080.000; baseline Rp1.400.000 -> selisih Rp320.000/22,9%; budget tersisa Rp120.000; biaya PUMP-01 Rp85.500 tanpa menggandakan tagihan.
+- Uji alokasi <= nilai tagihan, pengeluaran lintasbulan, baseline nol/hilang, kategori parsial, biaya meningkat, bulan berjalan, scope berubah, duplicate submit, edit/void, perangkat dinonaktifkan, dan estimasi digantikan tagihan. Jam kerja pemilik tidak otomatis jadi penghematan kas.
+- Uji transisi pengendalian: approval, offline, konflik perangkat, timeout, stop, dan refresh tidak melanjutkan simulator secara diam-diam.
+- Uji scheduler: slot WIB, once-per-slot, catch-up default skip, kondisi skip/block, cooldown/hysteresis, antrean pompa, batas kumulatif termasuk manual run, disable/missed slot, kegagalan stop, dan kecepatan clock tidak menyebabkan double execution.
+- Buktikan setidaknya satu penyiraman serta satu fertigasi berjalan sampai selesai secara otomatis dalam simulator tanpa approval setiap run. Tugas manual tetap menunggu manusia.
+- Cukup beberapa browser smoke test untuk alur utama; jangan mengejar coverage numerik.
+- Pastikan halaman selain Greenhouse tidak mengunduh scene 3D secara eager.
+- Pastikan video hilang dan WebGL gagal memiliki fallback yang bisa dipakai.
+- Screenshot review minimal: Ringkasan desktop, Greenhouse, Otomasi dengan run aktif, builder rutinitas, Pengendalian, Perangkat dengan rincian biaya, Ringkasan biaya periode, Pengeluaran tertaut, serta Ringkasan mobile.
+- Tidak ada network request ke layanan backend atau perangkat nyata.
+- Jika suatu pemeriksaan tidak dapat dilakukan di environment, laporkan spesifik; jangan mengklaim lolos.
+
+Serahkan:
+1. Source code siap dijalankan.
+2. README berisi install/run/build, versi dependensi terpasang, struktur aset, cara mengganti video/model, scheduler/demo clock, aktivasi satu kali, perbedaan pause/stop, cara reset/skenario demo, serta batas browser ditutup.
+3. Catatan batas prototype: data sintetis, analisis AI fixture, aktuasi simulasi, asumsi harga, dan bagian yang perlu validasi lapangan.
+4. Ringkasan implementasi dan hasil pemeriksaan.
+5. URL preview jika environment mendukung, tanpa mempublikasikan secara eksternal tanpa instruksi pengguna.
+
+Kerjakan bertahap: audit aset -> shell/tokens -> fixtures/state -> Ringkasan -> Greenhouse -> monitoring -> scheduler/otomasi -> inspeksi/pengendalian -> perangkat/riwayat -> biaya -> verifikasi.
+Selesaikan seluruh scope; jangan berhenti setelah halaman pertama.
+
+========================================================================
+CATATAN UNTUK PEMILIK PRODUK — DI LUAR PROMPT EKSEKUSI
+========================================================================
+
+Keputusan yang boleh dikonfirmasi sebelum produksi, tetapi tidak menghambat prototype:
+- Jenis tanaman/hama sasaran dan mekanisme pengusir/pengendali yang akan diuji.
+- Metode budidaya/media, sistem irigasi, kemampuan pompa/valve, profil nutrisi, pola operasi, dan batas yang akan divalidasi untuk pemasangan nyata. Prototype memakai profil demo, bukan resep lapangan.
+- Budget perangkat tambahan serta apakah greenhouse, internet, dan sumber daya sudah tersedia.
+- Model kamera, sensor, gateway, dan kemampuan integrasi nyata.
+- Harga lokal, biaya pengembangan/layanan produksi, kebutuhan operator, dan hasil uji lapangan.
+- Catatan pengeluaran sebelum/sesudah, periode cakupan, baseline yang sebanding, bukti pembayaran, serta apakah pengurangan waktu benar-benar menurunkan pengeluaran tenaga.
+
+Dasar pilihan teknis:
+- Vite menyediakan template React/TypeScript: https://vite.dev/guide/
+- React Three Fiber 9 berpasangan dengan React 19: https://r3f.docs.pmnd.rs/
+- Demand rendering dan optimasi scene: https://r3f.docs.pmnd.rs/advanced/scaling-performance
+- Tailwind dengan Vite: https://tailwindcss.com/docs/installation/using-vite
+- React Router declarative: https://reactrouter.com/start/declarative/installation
+
+Dasar rancangan otomasi (bukan setpoint budidaya):
+- Sensor dapat melengkapi jadwal irigasi dengan pemeriksaan kondisi media; sumber berikut membahas prinsip controller dan sensor, bukan jadwal khusus greenhouse paprika:
+  https://extension.okstate.edu/fact-sheets/smart-irrigation-technology-controllers-and-sensors
+- Fertigation injector membutuhkan pemilihan, pemeliharaan, serta kalibrasi; EC/pH dapat dipantau pada larutan:
+  https://fieldreport.caes.uga.edu/publications/B1237/fertilizer-injectors-selection-maintenance-and-calibration/
+
+Dasar kehati-hatian interpretasi monitoring:
+- UC IPM menjelaskan perangkap sebagai indikator relatif yang perlu dilengkapi inspeksi tanaman, bukan bukti tunggal kebutuhan pengendalian atau efektivitasnya:
+  https://ipm.ucanr.edu/agriculture/floriculture-and-ornamental-nurseries/monitoring-with-sticky-traps/
+
+Rujukan prinsip pengukuran penghematan energi (bukan klaim Vigor telah tersertifikasi atau terbukti hemat):
+https://www.energy.gov/cmei/femp/measurement-and-verification-activities-required-energy-savings-performance-contract
+https://www.evo-world.org/en/822-main-menu/product-a-services/protocols
+
+Pilihan stack dan rancangan produk di atas merupakan rekomendasi desain untuk scope prototype ini, bukan klaim satu framework selalu terbaik untuk semua kondisi.
+

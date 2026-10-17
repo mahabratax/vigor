@@ -1,0 +1,130 @@
+{
+  "inputs": {
+    "prompt": "Vigor_Prompt_Prototype_Frontend(1).txt",
+    "archive": "Vigor_Final_Designs(1).rar"
+  },
+  "pageReferences": [
+    {
+      "filename": "01_Ringkasan.png",
+      "route": "/ringkasan"
+    },
+    {
+      "filename": "02_Greenhouse.png",
+      "route": "/greenhouse"
+    },
+    {
+      "filename": "03_Hama_dan_Inspeksi.png",
+      "route": "/hama"
+    },
+    {
+      "filename": "04_Pengendalian.png",
+      "route": "/pengendalian"
+    },
+    {
+      "filename": "05_Otomasi_Jadwal.png",
+      "route": "/otomasi?tab=schedule"
+    },
+    {
+      "filename": "06_Otomasi_Daftar_Rutinitas.png",
+      "route": "/otomasi?tab=routines"
+    },
+    {
+      "filename": "07_Otomasi_Editor_Rutinitas.png",
+      "route": "/otomasi?tab=builder"
+    },
+    {
+      "filename": "08_Otomasi_Run_Aktif.png",
+      "route": "/otomasi?tab=executions"
+    },
+    {
+      "filename": "09_Otomasi_Profil_Nutrisi.png",
+      "route": "/otomasi?tab=nutrition"
+    },
+    {
+      "filename": "10_Otomasi_Gangguan.png",
+      "route": "/otomasi?tab=executions"
+    },
+    {
+      "filename": "11_Perangkat_Inventaris_dan_Biaya.png",
+      "route": "/perangkat"
+    },
+    {
+      "filename": "12_Perangkat_Kamera_dan_Sensor.png",
+      "route": "/perangkat?tab=cameras"
+    },
+    {
+      "filename": "13_Riwayat_dan_Laporan.png",
+      "route": "/riwayat"
+    },
+    {
+      "filename": "14_Biaya_dan_Penghematan.png",
+      "route": "/biaya"
+    },
+    {
+      "filename": "15_Pengeluaran_Detail_Servis.png",
+      "route": "/biaya?tab=expenses"
+    }
+  ],
+  "logoChoice": "02_Logo/01_Vigor_Forest.png",
+  "unusedLogoAlternatives": [
+    "02_Vigor_Emerald.png",
+    "03_Vigor_Botanical.png"
+  ],
+  "assetSources": {
+    "vigor-forest.webp": {
+      "source": "02_Logo/01_Vigor_Forest.png",
+      "crop": [
+        90,
+        255,
+        1460,
+        690
+      ]
+    },
+    "camera-trap.webp": {
+      "source": "01_Halaman/12_Perangkat_Kamera_dan_Sensor.png",
+      "crop": [
+        289,
+        290,
+        933,
+        639
+      ]
+    },
+    "inspection-evidence.webp": {
+      "source": "01_Halaman/03_Hama_dan_Inspeksi.png",
+      "crop": [
+        690,
+        340,
+        970,
+        527
+      ]
+    },
+    "inspection-work.webp": {
+      "source": "01_Halaman/13_Riwayat_dan_Laporan.png",
+      "crop": [
+        1008,
+        447,
+        1472,
+        584
+      ]
+    },
+    "greenhouse-reference.webp": {
+      "source": "01_Halaman/02_Greenhouse.png",
+      "crop": [
+        273,
+        248,
+        1048,
+        647
+      ]
+    }
+  },
+  "notSupplied": [
+    "MP4/WebM video",
+    "GLB/GLTF model",
+    "separate font files"
+  ],
+  "notes": [
+    "Crops are visual references, not actual timestamped camera recordings.",
+    "Baked-in evidence thumbnail boxes come from the supplied design; no model inference is performed.",
+    "No full-page image is used as an application screen."
+  ]
+}

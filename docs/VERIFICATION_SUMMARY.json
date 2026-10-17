@@ -1,0 +1,33 @@
+{
+  "artifact": "Vigor frontend prototype",
+  "domainTests": {
+    "passed": 55,
+    "failed": 0,
+    "runner": "Node built-in test runner"
+  },
+  "portableBrowserChecks": {
+    "passed": 54,
+    "total": 54,
+    "failed": 0,
+    "runner": "Python Playwright + Chromium, embedded document; explicit in-memory storage shim for flow tests"
+  },
+  "domainStrictTypecheck": "passed",
+  "sourceModuleSyntaxTranspile": {
+    "modules": 27,
+    "errors": 0
+  },
+  "responsiveViewports": [
+    390,
+    768,
+    1280,
+    1440
+  ],
+  "pageLevelOverflowChecks": 24,
+  "nativeReactViteBuild": "not run: dependencies not installed",
+  "nativeEslint": "not run",
+  "nativeVitest": "supplied but not run",
+  "nativePlaywrightHttp": "supplied but not run",
+  "threeJsRuntime": "not run; portable uses interactive SVG map",
+  "publishedExternally": false,
+  "scopeStatus": "Working review prototype; full original brief not completely implemented. See IMPLEMENTATION_STATUS.md."
+}

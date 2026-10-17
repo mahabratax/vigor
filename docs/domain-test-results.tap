@@ -1,0 +1,340 @@
+TAP version 13
+# Subtest: Fixture counts: 6 zones, 432 plants, 25 devices, 24 online, 4/6 coverage
+ok 1 - Fixture counts: 6 zones, 432 plants, 25 devices, 24 online, 4/6 coverage
+  ---
+  duration_ms: 3.148917
+  type: 'test'
+  ...
+# Subtest: Fixtures do not share mutable state
+ok 2 - Fixtures do not share mutable state
+  ---
+  duration_ms: 1.201932
+  type: 'test'
+  ...
+# Subtest: Seven September records reconcile to 1,080,000; budget remainder 120,000
+ok 3 - Seven September records reconcile to 1,080,000; budget remainder 120,000
+  ---
+  duration_ms: 7.637375
+  type: 'test'
+  ...
+# Subtest: Baseline 1.4m gives 320,000 difference / 22.857142%
+ok 4 - Baseline 1.4m gives 320,000 difference / 22.857142%
+  ---
+  duration_ms: 0.994349
+  type: 'test'
+  ...
+# Subtest: Planner 2-zone total 2.86m never changes ledger or assets
+ok 5 - Planner 2-zone total 2.86m never changes ledger or assets
+  ---
+  duration_ms: 1.677669
+  type: 'test'
+  ...
+# Subtest: Pump 85,500 = 40,500 allocation + 45,000 service; power bill counted once
+ok 6 - Pump 85,500 = 40,500 allocation + 45,000 service; power bill counted once
+  ---
+  duration_ms: 0.787046
+  type: 'test'
+  ...
+# Subtest: Allocation targets reconcile including other devices; above-bill allocations rejected
+ok 7 - Allocation targets reconcile including other devices; above-bill allocations rejected
+  ---
+  duration_ms: 1.169334
+  type: 'test'
+  ...
+# Subtest: Pump September history reconciles 30 h and 27 kWh without water measurement claim
+ok 8 - Pump September history reconciles 30 h and 27 kWh without water measurement claim
+  ---
+  duration_ms: 0.659945
+  type: 'test'
+  ...
+# Subtest: Other exact device costs: dose27k CTRL49.5k EC65k cameraE4.5k
+ok 9 - Other exact device costs: dose27k CTRL49.5k EC65k cameraE4.5k
+  ---
+  duration_ms: 0.838284
+  type: 'test'
+  ...
+# Subtest: Missing baseline is unavailable, not 0%
+ok 10 - Missing baseline is unavailable, not 0%
+  ---
+  duration_ms: 1.064555
+  type: 'test'
+  ...
+# Subtest: Missing mandatory category produces partial comparison, not zero
+ok 11 - Missing mandatory category produces partial comparison, not zero
+  ---
+  duration_ms: 0.64368
+  type: 'test'
+  ...
+# Subtest: Zero baseline suppresses percentages
+ok 12 - Zero baseline suppresses percentages
+  ---
+  duration_ms: 0.527345
+  type: 'test'
+  ...
+# Subtest: Cost increases stay negative, not forced into savings
+ok 13 - Cost increases stay negative, not forced into savings
+  ---
+  duration_ms: 0.890823
+  type: 'test'
+  ...
+# Subtest: Changed area and device scope not silently normalized
+ok 14 - Changed area and device scope not silently normalized
+  ---
+  duration_ms: 0.525662
+  type: 'test'
+  ...
+# Subtest: Current month is marked unfinished and not compared against full baseline
+ok 15 - Current month is marked unfinished and not compared against full baseline
+  ---
+  duration_ms: 0.475367
+  type: 'test'
+  ...
+# Subtest: Explicit daily normalization only after all October categories recorded
+ok 16 - Explicit daily normalization only after all October categories recorded
+  ---
+  duration_ms: 1.162903
+  type: 'test'
+  ...
+# Subtest: Maintenance October 50k adds one shared expense and leaves September unchanged
+ok 17 - Maintenance October 50k adds one shared expense and leaves September unchanged
+  ---
+  duration_ms: 1.051965
+  type: 'test'
+  ...
+# Subtest: Free maintenance deduplicates and does not create a payment
+ok 18 - Free maintenance deduplicates and does not create a payment
+  ---
+  duration_ms: 0.602989
+  type: 'test'
+  ...
+# Subtest: Completing maintenance does not imply new payment
+ok 19 - Completing maintenance does not imply new payment
+  ---
+  duration_ms: 0.612824
+  type: 'test'
+  ...
+# Subtest: Expense duplicate submission is idempotent; similar payments require review
+ok 20 - Expense duplicate submission is idempotent; similar payments require review
+  ---
+  duration_ms: 0.86907
+  type: 'test'
+  ...
+# Subtest: Edit, void, undo reuse original ID and reconcile totals
+ok 21 - Edit, void, undo reuse original ID and reconcile totals
+  ---
+  duration_ms: 0.763611
+  type: 'test'
+  ...
+# Subtest: Cross-month nutrition: full cash on payment date; split comparison not doubled
+ok 22 - Cross-month nutrition: full cash on payment date; split comparison not doubled
+  ---
+  duration_ms: 0.710481
+  type: 'test'
+  ...
+# Subtest: Invalid consumption allocations and edits below existing allocations rejected
+ok 23 - Invalid consumption allocations and edits below existing allocations rejected
+  ---
+  duration_ms: 0.831684
+  type: 'test'
+  ...
+# Subtest: Deactivated device retains historical expenses and original scope
+ok 24 - Deactivated device retains historical expenses and original scope
+  ---
+  duration_ms: 0.465893
+  type: 'test'
+  ...
+# Subtest: Recurring reminders are drafts and never add paid nominal
+ok 25 - Recurring reminders are drafts and never add paid nominal
+  ---
+  duration_ms: 0.600306
+  type: 'test'
+  ...
+# Subtest: CSV user strings neutralize spreadsheet formula injection
+ok 26 - CSV user strings neutralize spreadsheet formula injection
+  ---
+  duration_ms: 0.177979
+  type: 'test'
+  ...
+# Subtest: WIB next occurrence independent of host timezone: 10:00
+ok 27 - WIB next occurrence independent of host timezone: 10:00
+  ---
+  duration_ms: 0.44411
+  type: 'test'
+  ...
+# Subtest: Automatic irrigation completes A before B, pump resource exclusive
+ok 28 - Automatic irrigation completes A before B, pump resource exclusive
+  ---
+  duration_ms: 15.597487
+  type: 'test'
+  ...
+# Subtest: Automatic fertigation completes flow → dosing → flush → stop; no approval per run
+ok 29 - Automatic fertigation completes flow → dosing → flush → stop; no approval per run
+  ---
+  duration_ms: 18.58497
+  type: 'test'
+  ...
+# Subtest: 60x advancement processes all deadlines once, matching one-second clock
+ok 30 - 60x advancement processes all deadlines once, matching one-second clock
+  ---
+  duration_ms: 39.49156
+  type: 'test'
+  ...
+# Subtest: Wet media B skipped with reason, not false failure
+ok 31 - Wet media B skipped with reason, not false failure
+  ---
+  duration_ms: 8.057779
+  type: 'test'
+  ...
+# Subtest: Low tank and required stale sensor block start; no commands issued
+ok 32 - Low tank and required stale sensor block start; no commands issued
+  ---
+  duration_ms: 8.171149
+  type: 'test'
+  ...
+# Subtest: Camera E offline does not independently block irrigation
+ok 33 - Camera E offline does not independently block irrigation
+  ---
+  duration_ms: 9.330908
+  type: 'test'
+  ...
+# Subtest: No flow does not deliver nutrients and runs stop procedure
+ok 34 - No flow does not deliver nutrients and runs stop procedure
+  ---
+  duration_ms: 6.092816
+  type: 'test'
+  ...
+# Subtest: Lost flow mid-dose stops dosing without automatic retries
+ok 35 - Lost flow mid-dose stops dosing without automatic retries
+  ---
+  duration_ms: 14.253059
+  type: 'test'
+  ...
+# Subtest: Failure to stop retains unknown lock and requires reconciliation
+ok 36 - Failure to stop retains unknown lock and requires reconciliation
+  ---
+  duration_ms: 6.476565
+  type: 'test'
+  ...
+# Subtest: Failed start acknowledgment does not retry actuation
+ok 37 - Failed start acknowledgment does not retry actuation
+  ---
+  duration_ms: 2.223472
+  type: 'test'
+  ...
+# Subtest: Shared pump queues manual and scheduled work; no overlap
+ok 38 - Shared pump queues manual and scheduled work; no overlap
+  ---
+  duration_ms: 18.705622
+  type: 'test'
+  ...
+# Subtest: Queue expiry skips late execution rather than unlimited backlog
+ok 39 - Queue expiry skips late execution rather than unlimited backlog
+  ---
+  duration_ms: 2.578097
+  type: 'test'
+  ...
+# Subtest: Pause routine does not stop active execution
+ok 40 - Pause routine does not stop active execution
+  ---
+  duration_ms: 10.41338
+  type: 'test'
+  ...
+# Subtest: Skip once leaves future schedule intact, creates no run for selected slot
+ok 41 - Skip once leaves future schedule intact, creates no run for selected slot
+  ---
+  duration_ms: 2.727291
+  type: 'test'
+  ...
+# Subtest: Manual stop waits for simulator feedback, then releases lock
+ok 42 - Manual stop waits for simulator feedback, then releases lock
+  ---
+  duration_ms: 2.997269
+  type: 'test'
+  ...
+# Subtest: Daily cycle guard includes manual runs
+ok 43 - Daily cycle guard includes manual runs
+  ---
+  duration_ms: 10.610538
+  type: 'test'
+  ...
+# Subtest: Condition trigger debounces and creates only one run for one episode
+ok 44 - Condition trigger debounces and creates only one run for one episode
+  ---
+  duration_ms: 12.457111
+  type: 'test'
+  ...
+# Subtest: Version mutation cannot change active run snapshot
+ok 45 - Version mutation cannot change active run snapshot
+  ---
+  duration_ms: 13.929882
+  type: 'test'
+  ...
+# Subtest: Human preventive task created automatically but not completed physically
+ok 46 - Human preventive task created automatically but not completed physically
+  ---
+  duration_ms: 32.542965
+  type: 'test'
+  ...
+# Subtest: Human task cannot masquerade as automatically completed machine step
+ok 47 - Human task cannot masquerade as automatically completed machine step
+  ---
+  duration_ms: 0.907749
+  type: 'test'
+  ...
+# Subtest: Monitoring-only capability hides automation hardware and blocks irrigation
+ok 48 - Monitoring-only capability hides automation hardware and blocks irrigation
+  ---
+  duration_ms: 3.168647
+  type: 'test'
+  ...
+# Subtest: Dry-run guard evaluation leaves commands, cases, and runs untouched
+ok 49 - Dry-run guard evaluation leaves commands, cases, and runs untouched
+  ---
+  duration_ms: 1.002001
+  type: 'test'
+  ...
+# Subtest: Reload active run pauses and retains unknown resource; no dose resumed
+ok 50 - Reload active run pauses and retains unknown resource; no dose resumed
+  ---
+  duration_ms: 15.355091
+  type: 'test'
+  ...
+# Subtest: Malformed storage safely restores fixture
+ok 51 - Malformed storage safely restores fixture
+  ---
+  duration_ms: 1.215833
+  type: 'test'
+  ...
+# Subtest: Inspection rejects affected > examined; valid inspection does not close case
+ok 52 - Inspection rejects affected > examined; valid inspection does not close case
+  ---
+  duration_ms: 0.778243
+  type: 'test'
+  ...
+# Subtest: Pest simulator requires review; shares command engine; evaluates explicitly
+ok 53 - Pest simulator requires review; shares command engine; evaluates explicitly
+  ---
+  duration_ms: 1.848918
+  type: 'test'
+  ...
+# Subtest: Offline approved pest simulator is blocked without false success
+ok 54 - Offline approved pest simulator is blocked without false success
+  ---
+  duration_ms: 0.528967
+  type: 'test'
+  ...
+# Subtest: Transition is immutable and errors do not mutate caller state
+ok 55 - Transition is immutable and errors do not mutate caller state
+  ---
+  duration_ms: 1.902018
+  type: 'test'
+  ...
+1..55
+# tests 55
+# suites 0
+# pass 55
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 370.187025

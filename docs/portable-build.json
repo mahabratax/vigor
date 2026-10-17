@@ -1,0 +1,8 @@
+{
+  "runtime": "Vendored Preact compatibility adapter; not React 19",
+  "typescript": "5.8.3",
+  "node": "v22.16.0",
+  "modules": 27,
+  "syntaxDiagnostics": 0,
+  "generated": "2026-10-14T05:18:57.949Z"
+}

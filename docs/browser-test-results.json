@@ -1,0 +1,272 @@
+[
+  {
+    "check": "Render /ringkasan",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /greenhouse",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /hama",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /pengendalian",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /otomasi",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /otomasi?tab=routines",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /otomasi?tab=nutrition",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /otomasi?tab=builder",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /perangkat",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /perangkat?tab=cameras",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /perangkat?tab=maintenance",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /riwayat",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /riwayat?tab=report",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /biaya",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /biaya?tab=expenses",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Render /biaya?tab=savings",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Pump → filtered expenses preserves September and references",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Maintenance form creates one October expense, September unchanged",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Inspection validation → plan approval → simulator completion",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Automatic irrigation and fertigation across demo clock",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Six-stage routine builder renders",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Scenario selector drives real blocked state",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Planner changes scope and owned assets without creating expenses",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Routine builder saves reviewed version across all six stages",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Expense table total respects local search filter",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "Native dialog Escape closes and releases modal",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "No page overflow 390px /ringkasan",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 390px /greenhouse",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 390px /otomasi?tab=builder",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 390px /otomasi?tab=routines",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 390px /perangkat",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 390px /biaya?tab=expenses",
+    "passed": true,
+    "detail": "{'body': 390, 'viewport': 390}"
+  },
+  {
+    "check": "No page overflow 768px /ringkasan",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 768px /greenhouse",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 768px /otomasi?tab=builder",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 768px /otomasi?tab=routines",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 768px /perangkat",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 768px /biaya?tab=expenses",
+    "passed": true,
+    "detail": "{'body': 768, 'viewport': 768}"
+  },
+  {
+    "check": "No page overflow 1280px /ringkasan",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1280px /greenhouse",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1280px /otomasi?tab=builder",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1280px /otomasi?tab=routines",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1280px /perangkat",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1280px /biaya?tab=expenses",
+    "passed": true,
+    "detail": "{'body': 1280, 'viewport': 1280}"
+  },
+  {
+    "check": "No page overflow 1440px /ringkasan",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "No page overflow 1440px /greenhouse",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "No page overflow 1440px /otomasi?tab=builder",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "No page overflow 1440px /otomasi?tab=routines",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "No page overflow 1440px /perangkat",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "No page overflow 1440px /biaya?tab=expenses",
+    "passed": true,
+    "detail": "{'body': 1440, 'viewport': 1440}"
+  },
+  {
+    "check": "Mobile drawer navigation and device sheet",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "No runtime page errors",
+    "passed": true,
+    "detail": ""
+  },
+  {
+    "check": "No backend / external runtime requests",
+    "passed": true,
+    "detail": "[]"
+  },
+  {
+    "check": "Storage-unavailable fallback stays usable",
+    "passed": true,
+    "detail": ""
+  }
+]
